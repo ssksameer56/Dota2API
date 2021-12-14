@@ -1,0 +1,111 @@
+"""
+Attribute type for a hero
+"""
+enum Attribute{
+    STRENGTH,
+    AGILITY,
+    INTELLIGENCE
+}
+"""
+Attack Type for a hero
+"""
+enum AttackType{
+    MELEE,
+    RANGED
+}
+
+"""
+Type of shops where items are available
+"""
+enum SHOPTYPE {
+    ANCIENT
+    SECRETSHOP
+    SIDESHOP
+}
+
+"""
+The roles available for various heroes
+"""
+enum Role{
+    CARRY,
+    NUKER,
+    INITIATOR,
+    DISABLER,
+    DURABLE,
+    ESCAPE,
+    SUPPORT,
+    PUSHER,
+    JUNGLER
+}
+"""
+Hero defined as per Dota 2
+"""
+type Hero{
+    name: String!,
+    heroName: String!,
+    primaryAttribute: Attribute!,
+    roles:[Role!]!
+}
+
+"""
+Model to map in game hero
+"""
+type InGameHero {
+    hero: Hero!,
+    items: [Item!]!,
+    gold: Int!,
+    xp: Int!,
+    level: Int!,
+    kills: Int!,
+    deaths: Int!,
+    assists: Int!,    
+}
+
+
+"""
+Type to Handle stats between two heroes
+"""
+type HeroMatchup {
+    hero1: Hero!,
+    hero2: Hero!,
+    winPercent: Int!
+}
+
+"""
+Items available in Dota 2
+"""
+type Item {
+    name: String!,
+    id : Int!,
+    cost: Int!,
+    shop: SHOPTYPE! 
+}
+
+
+type Match{
+    matchID: Int!,
+    direKills: Int!,
+    radiantKills: Int!,
+    duration: Int!,
+    gameMode: String!,
+    goldAdvantage: Int!,
+    xpAdvantage: Int!,
+    radiantTowersKilled: Int!,
+    direTowersKilled: Int!,
+    radiantBarracksKilled: Int!,
+    direBarracksKilled: Int!,
+    radiantHeroes: [InGameHero!]!,
+    direHeroes: [InGameHero!]!,
+}
+
+type Query{
+    getAllHeroes : [Hero!]!,
+    getHero(name: String): Hero!,
+    getAllItems: [Item!]!,
+    getItem(name: String): Item!,
+    getMatchDetails(id: Int): Match
+}
+
+type Subscription{
+    getLiveMatches: [Match!]!
+}
