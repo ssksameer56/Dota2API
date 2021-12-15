@@ -1,6 +1,6 @@
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
-  - ./../models/graph/*.graphqls
+  - ./../models/graph/dotaschema.graphqls
 
 # Where should the generated server code go?
 exec:
@@ -14,7 +14,7 @@ exec:
 
 # Where should any generated models go?
 model:
-  filename: ./../models/graph/model.go
+  filename: ./../models/graph/graphmodel.go
   package: model
 
 # Where should the resolver implementations go?

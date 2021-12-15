@@ -129,8 +129,7 @@ type Query{
     getHero(name: String): Hero!,
     getAllItems: [Item!]!,
     getItem(name: String): Item!,
-    getMatchDetails(id: Int): Match,
-    getMatchDetails(ids: [Int!]!): [Match]!
+    getMatchDetails(ids: [Int!]!): [Match!]!
 }
 
 """
@@ -143,4 +142,10 @@ type Mutation{
 
 type Subscription{
     getLiveMatchIDs: [Int!]!
+}
+
+schema{
+    query: Query,
+    mutation: Mutation,
+    subscription: Subscription
 }
