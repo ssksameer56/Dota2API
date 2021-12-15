@@ -81,7 +81,9 @@ type Item {
     shop: SHOPTYPE! 
 }
 
-
+"""
+Basic attributes of a Dota 2 Match
+"""
 type Match{
     matchID: Int!,
     direKills: Int!,
@@ -98,14 +100,26 @@ type Match{
     direHeroes: [InGameHero!]!,
 }
 
+"""
+All the Queries possible
+"""
 type Query{
     getAllHeroes : [Hero!]!,
     getHero(name: String): Hero!,
     getAllItems: [Item!]!,
     getItem(name: String): Item!,
-    getMatchDetails(id: Int): Match
+    getMatchDetails(id: Int): Match,
+    getMatchDetails(ids: [Int!]!): [Match]!
+}
+
+"""
+Updates,Creates,Deletes on Heroes
+"""
+type Mutation{
+    markHeroAsFavourite(id: Int): [Hero]!,
+    unMarkHeroAsFavourite(id: Int): [Hero]!,
 }
 
 type Subscription{
-    getLiveMatches: [Match!]!
+    getLiveMatchIDs: [Int!]!
 }
