@@ -1,0 +1,5 @@
+{
+    "logFile":"./log",
+    "isProduction":"No",
+    "apiKey": "{{Insert OpenDota Key Here"
+}
