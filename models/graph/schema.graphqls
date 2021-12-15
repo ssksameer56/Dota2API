@@ -37,6 +37,19 @@ enum Role{
     PUSHER,
     JUNGLER
 }
+enum DamageType {
+    PHYSICAL,
+    MAGICAL,
+    PURE
+}
+enum AbilityBehavior{
+    PASSIVE,
+    ACTIVE,
+    CHANNEL,
+    TOGGLED,
+
+}
+
 """
 Hero defined as per Dota 2
 """
@@ -44,7 +57,15 @@ type Hero{
     name: String!,
     heroName: String!,
     primaryAttribute: Attribute!,
-    roles:[Role!]!
+    roles:[Role!]!,
+    abilities: [HeroAbility!]!
+}
+
+type HeroAbility{
+    name: String!,
+    description: String!,
+    damageType: DamageType!,
+    behaviour: AbilityBehavior!
 }
 
 """
@@ -78,7 +99,7 @@ type Item {
     name: String!,
     id : Int!,
     cost: Int!,
-    shop: SHOPTYPE! 
+    hint: String! 
 }
 
 """
