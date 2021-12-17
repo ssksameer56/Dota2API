@@ -45,10 +45,10 @@ type InGameHero struct {
 
 // Items available in Dota 2
 type Item struct {
-	Name string `json:"name"`
-	ID   int    `json:"id"`
-	Cost int    `json:"cost"`
-	Hint string `json:"hint"`
+	Name string   `json:"name"`
+	ID   int      `json:"id"`
+	Cost int      `json:"cost"`
+	Hint []string `json:"hint"`
 }
 
 // Basic attributes of a Dota 2 Match

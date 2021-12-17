@@ -99,7 +99,7 @@ type Item {
     name: String!,
     id : Int!,
     cost: Int!,
-    hint: String! 
+    hint: [String!]! 
 }
 
 """

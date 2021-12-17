@@ -1,1 +1,1 @@
-schema: models/graph/schema.graphqls
+schema: models/graph/dotaschema.graphqls
