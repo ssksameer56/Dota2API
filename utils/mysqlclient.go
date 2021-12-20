@@ -3,7 +3,10 @@ package utils
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
+
+	"github.com/ssksameer56/Dota2API/models/database"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -22,26 +25,49 @@ func InitalizeDBConnection(connString string, dbName string) *SqlConnection {
 	}
 }
 
-func (conn *SqlConnection) Query(pctx context.Context, query string, dataObject interface{}) error {
+func (conn *SqlConnection) QueryFavourites(pctx context.Context, query string) (*[]database.DBModelFavourites, error) {
 	dbConn, err := sql.Open(conn.driverName, conn.connectionString)
 	dbConn.Close()
 	if err != nil {
-		LogError("cannot open connection to DB: "+err.Error(), "Query")
+		LogError("cannot open connection to DB: "+err.Error(), "QueryFavourites")
 	}
 	ctx, cancel := context.WithTimeout(pctx, time.Minute)
 	defer cancel()
 	rows, err := dbConn.QueryContext(ctx, query)
 	if err != nil {
-		LogError("erro reading from database: "+err.Error(), "Query")
+		LogError("erro reading from database: "+err.Error(), "QueryFavourites")
 	}
+	result := []database.DBModelFavourites{}
 	for rows.Next() {
-		//TODO: Modify result scan function to be as generic as possible
-		err := rows.Scan(&dataObject)
+		newRow := database.DBModelFavourites{}
+		err := rows.Scan(&newRow)
 		if err != nil {
-			LogError("erro reading entry: "+err.Error(), "Query")
-			return err
+			LogError("erro reading entry: "+err.Error(), "QueryFavourites")
+			return nil, err
 		}
+		result = append(result, newRow)
 	}
-	LogInfo("Read data from database complete", "Query")
-	return nil
+	LogInfo(fmt.Sprintf("%d read from database complete", len(result)), "QueryFavourites")
+	return &result, nil
+}
+
+//Function to update on the Favourites Table
+func (conn *SqlConnection) ModifyFavourites(pctx context.Context, query string) (int64, error) {
+	dbConn, err := sql.Open(conn.driverName, conn.connectionString)
+	dbConn.Close()
+	if err != nil {
+		LogError("cannot open connection to DB: "+err.Error(), "ModifyFavourites")
+		return -1, err
+	}
+	ctx, cancel := context.WithTimeout(pctx, time.Minute)
+	defer cancel()
+	result, err := dbConn.ExecContext(ctx, query)
+	if err != nil {
+		LogError("erro updating database: "+err.Error(), "ModifyFavourites")
+		return -1, err
+	}
+	var rows int64
+	rows, _ = result.RowsAffected()
+	LogInfo("Executed the query: "+query, "ModifyFavourites")
+	return rows, nil
 }
