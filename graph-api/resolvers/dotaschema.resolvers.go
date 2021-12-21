@@ -5,17 +5,22 @@ package resolvers
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
-	server "github.com/ssksameer56/Dota2API/graph/api"
+	server "github.com/ssksameer56/Dota2API/graph-api/api"
 	model "github.com/ssksameer56/Dota2API/models/graph"
 )
 
-func (r *mutationResolver) MarkHeroAsFavourite(ctx context.Context, id *int) ([]*model.Hero, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) MarkHeroAsFavourite(ctx context.Context, heroID int, userID int) (bool, error) {
+	_, err := r.favouritesService.QueryFavouritesOfAUser(ctx, userID)
+	if err != nil {
+		return false, errors.New("could not mark hero as favourite")
+	}
+	return true, err
 }
 
-func (r *mutationResolver) UnMarkHeroAsFavourite(ctx context.Context, id *int) ([]*model.Hero, error) {
+func (r *mutationResolver) UnMarkHeroAsFavourite(ctx context.Context, heroID int, userID int) (bool, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 

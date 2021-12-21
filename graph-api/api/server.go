@@ -101,8 +101,8 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		MarkHeroAsFavourite   func(childComplexity int, id *int) int
-		UnMarkHeroAsFavourite func(childComplexity int, id *int) int
+		MarkHeroAsFavourite   func(childComplexity int, heroID int, userID int) int
+		UnMarkHeroAsFavourite func(childComplexity int, heroID int, userID int) int
 	}
 
 	Query struct {
@@ -119,8 +119,8 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	MarkHeroAsFavourite(ctx context.Context, id *int) ([]*model.Hero, error)
-	UnMarkHeroAsFavourite(ctx context.Context, id *int) ([]*model.Hero, error)
+	MarkHeroAsFavourite(ctx context.Context, heroID int, userID int) (bool, error)
+	UnMarkHeroAsFavourite(ctx context.Context, heroID int, userID int) (bool, error)
 }
 type QueryResolver interface {
 	GetAllHeroes(ctx context.Context) ([]*model.Hero, error)
@@ -417,7 +417,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.MarkHeroAsFavourite(childComplexity, args["id"].(*int)), true
+		return e.complexity.Mutation.MarkHeroAsFavourite(childComplexity, args["heroID"].(int), args["userID"].(int)), true
 
 	case "Mutation.unMarkHeroAsFavourite":
 		if e.complexity.Mutation.UnMarkHeroAsFavourite == nil {
@@ -429,7 +429,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UnMarkHeroAsFavourite(childComplexity, args["id"].(*int)), true
+		return e.complexity.Mutation.UnMarkHeroAsFavourite(childComplexity, args["heroID"].(int), args["userID"].(int)), true
 
 	case "Query.getAllHeroes":
 		if e.complexity.Query.GetAllHeroes == nil {
@@ -707,8 +707,8 @@ type Query{
 Updates,Creates,Deletes on Heroes
 """
 type Mutation{
-    markHeroAsFavourite(id: Int): [Hero]!,
-    unMarkHeroAsFavourite(id: Int): [Hero]!,
+    markHeroAsFavourite(heroID: Int!, userID: Int!): Boolean!,
+    unMarkHeroAsFavourite(heroID: Int!, userID: Int!): Boolean!,
 }
 
 type Subscription{
@@ -730,30 +730,48 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) field_Mutation_markHeroAsFavourite_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *int
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+	var arg0 int
+	if tmp, ok := rawArgs["heroID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("heroID"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["heroID"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["userID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["userID"] = arg1
 	return args, nil
 }
 
 func (ec *executionContext) field_Mutation_unMarkHeroAsFavourite_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *int
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+	var arg0 int
+	if tmp, ok := rawArgs["heroID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("heroID"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["heroID"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["userID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["userID"] = arg1
 	return args, nil
 }
 
@@ -2175,7 +2193,7 @@ func (ec *executionContext) _Mutation_markHeroAsFavourite(ctx context.Context, f
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().MarkHeroAsFavourite(rctx, args["id"].(*int))
+		return ec.resolvers.Mutation().MarkHeroAsFavourite(rctx, args["heroID"].(int), args["userID"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2187,9 +2205,9 @@ func (ec *executionContext) _Mutation_markHeroAsFavourite(ctx context.Context, f
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Hero)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalNHero2ᚕᚖgithubᚗcomᚋssksameer56ᚋDota2APIᚋmodelsᚋgraphᚐHero(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_unMarkHeroAsFavourite(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2217,7 +2235,7 @@ func (ec *executionContext) _Mutation_unMarkHeroAsFavourite(ctx context.Context,
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UnMarkHeroAsFavourite(rctx, args["id"].(*int))
+		return ec.resolvers.Mutation().UnMarkHeroAsFavourite(rctx, args["heroID"].(int), args["userID"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2229,9 +2247,9 @@ func (ec *executionContext) _Mutation_unMarkHeroAsFavourite(ctx context.Context,
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Hero)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalNHero2ᚕᚖgithubᚗcomᚋssksameer56ᚋDota2APIᚋmodelsᚋgraphᚐHero(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getAllHeroes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4448,44 +4466,6 @@ func (ec *executionContext) marshalNHero2githubᚗcomᚋssksameer56ᚋDota2API�
 	return ec._Hero(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNHero2ᚕᚖgithubᚗcomᚋssksameer56ᚋDota2APIᚋmodelsᚋgraphᚐHero(ctx context.Context, sel ast.SelectionSet, v []*model.Hero) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOHero2ᚖgithubᚗcomᚋssksameer56ᚋDota2APIᚋmodelsᚋgraphᚐHero(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	return ret
-}
-
 func (ec *executionContext) marshalNHero2ᚕᚖgithubᚗcomᚋssksameer56ᚋDota2APIᚋmodelsᚋgraphᚐHeroᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Hero) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -5216,28 +5196,6 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return graphql.MarshalBoolean(*v)
-}
-
-func (ec *executionContext) marshalOHero2ᚖgithubᚗcomᚋssksameer56ᚋDota2APIᚋmodelsᚋgraphᚐHero(ctx context.Context, sel ast.SelectionSet, v *model.Hero) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Hero(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := graphql.UnmarshalInt(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return graphql.MarshalInt(*v)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

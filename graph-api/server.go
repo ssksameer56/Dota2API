@@ -7,8 +7,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	server "github.com/ssksameer56/Dota2API/graph/api"
-	"github.com/ssksameer56/Dota2API/graph/resolvers"
+	server "github.com/ssksameer56/Dota2API/graph-api/api"
+	"github.com/ssksameer56/Dota2API/graph-api/resolvers"
 )
 
 const defaultPort = "8080"
