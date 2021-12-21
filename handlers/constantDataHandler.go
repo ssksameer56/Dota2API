@@ -6,7 +6,7 @@ import (
 
 	"github.com/ssksameer56/Dota2API/models/common"
 	odmodels "github.com/ssksameer56/Dota2API/models/opendota"
-	"github.com/ssksameer56/Dota2API/opendota-client"
+	"github.com/ssksameer56/Dota2API/opendota"
 )
 
 type Dota2Handler struct {
@@ -16,16 +16,20 @@ type Dota2Handler struct {
 
 func (dh *Dota2Handler) GetAllHeroes() []odmodels.Hero {
 	heroes := []odmodels.Hero{}
-	for _, val := range *dh.GameData.Heroes {
-		heroes = append(heroes, val)
+	if *dh.GameData.Heroes != nil {
+		for _, val := range *dh.GameData.Heroes {
+			heroes = append(heroes, val)
+		}
 	}
 	return heroes
 }
 
 func (dh *Dota2Handler) GetAllItems() []odmodels.Item {
 	items := []odmodels.Item{}
-	for _, val := range *dh.GameData.Items {
-		items = append(items, val)
+	if *dh.GameData.Items != nil {
+		for _, val := range *dh.GameData.Items {
+			items = append(items, val)
+		}
 	}
 	return items
 }
