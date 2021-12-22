@@ -9,10 +9,13 @@ type ability struct {
 }
 
 type Hero struct {
-	Id        int    `json:"id"`
-	HeroName  string `json:"localized_name"`
-	Abilities []ability
-	NPCName   string `json:"name"`
+	Id               int    `json:"id"`
+	HeroName         string `json:"localized_name"`
+	Abilities        []ability
+	NPCName          string   `json:"name"`
+	PrimaryAttribute string   `json:"primary_attr"`
+	AttackType       string   `json:"attack_type"`
+	Roles            []string `json:"roles"`
 }
 type Item struct {
 	Name string   `json:"dname"`

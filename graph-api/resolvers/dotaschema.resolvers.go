@@ -13,7 +13,7 @@ import (
 )
 
 func (r *mutationResolver) MarkHeroAsFavourite(ctx context.Context, heroID int, userID int) (bool, error) {
-	_, err := r.favouritesService.QueryFavouritesOfAUser(ctx, userID)
+	_, err := r.favouritesService.MarkFavouritesForAUser(ctx, userID, []int{heroID})
 	if err != nil {
 		return false, errors.New("could not mark hero as favourite")
 	}
@@ -21,11 +21,52 @@ func (r *mutationResolver) MarkHeroAsFavourite(ctx context.Context, heroID int, 
 }
 
 func (r *mutationResolver) UnMarkHeroAsFavourite(ctx context.Context, heroID int, userID int) (bool, error) {
-	panic(fmt.Errorf("not implemented"))
+	existingIDs, err := r.favouritesService.QueryFavouritesOfAUser(ctx, userID)
+	if err != nil {
+		return false, errors.New("could not mark hero as favourite")
+	} else if len(existingIDs) == 0 {
+		return false, errors.New("no favourites exist for this user")
+	}
+	removedData := []int{}
+	for _, v := range existingIDs {
+		if v == heroID {
+			continue
+		}
+		removedData = append(removedData, v)
+	}
+	_, err = r.favouritesService.MarkFavouritesForAUser(ctx, userID, removedData)
+	if err != nil {
+		return false, err
+	}
+	return true, err
 }
 
 func (r *queryResolver) GetAllHeroes(ctx context.Context) ([]*model.Hero, error) {
-	panic(fmt.Errorf("not implemented"))
+	allHeroes := r.constantDataService.GetAllHeroes()
+	if len(allHeroes) == 0 {
+		hero := model.Hero{}
+		return []*model.Hero{&hero}, errors.New("no heroes present")
+	}
+	heroData := []*model.Hero{}
+	for _, rawHero := range allHeroes {
+		abilities := []*model.HeroAbility{}
+		for _, rawAbility := range abilities {
+			ability := model.HeroAbility{
+				Name:        rawAbility.Name,
+				Description: rawAbility.Description,
+				DamageType:  rawAbility.DamageType,
+				Behaviour:   rawAbility.Behaviour,
+			}
+			abilities = append(abilities, &ability)
+		}
+		hero := model.Hero{
+			Name:             rawHero.HeroName,
+			Abilities:        abilities,
+			PrimaryAttribute: model.Attribute(rawHero.PrimaryAttribute),
+		}
+		heroData = append(heroData, &hero)
+	}
+	return heroData, nil
 }
 
 func (r *queryResolver) GetHero(ctx context.Context, name *string) (*model.Hero, error) {
