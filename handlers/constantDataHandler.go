@@ -34,22 +34,26 @@ func (dh *Dota2Handler) GetAllItems() []odmodels.Item {
 	return items
 }
 
-func (dh *Dota2Handler) GetHero(id int) (odmodels.Hero, error) {
+func (dh *Dota2Handler) GetHero(name string) (odmodels.Hero, error) {
 	if len(*(dh.GameData.Heroes)) == 0 {
 		return odmodels.Hero{}, errors.New("hero with that ID doesn't exist")
 	}
-	if val, ok := (*dh.GameData.Heroes)[id]; ok {
-		return val, nil
+	for _, hero := range *dh.GameData.Heroes {
+		if hero.HeroName == name {
+			return hero, nil
+		}
 	}
 	return odmodels.Hero{}, errors.New("hero with that ID doesn't exist")
 }
 
-func (dh *Dota2Handler) GetItem(id int) (odmodels.Item, error) {
+func (dh *Dota2Handler) GetItem(name string) (odmodels.Item, error) {
 	if len(*(dh.GameData.Items)) == 0 {
 		return odmodels.Item{}, errors.New("item with that ID doesn't exist")
 	}
-	if val, ok := (*dh.GameData.Items)[id]; ok {
-		return val, nil
+	for _, item := range *dh.GameData.Items {
+		if item.Name == name {
+			return item, nil
+		}
 	}
 	return odmodels.Item{}, errors.New("item with that ID doesn't exist")
 }

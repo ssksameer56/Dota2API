@@ -49,36 +49,36 @@ func (r *queryResolver) GetAllHeroes(ctx context.Context) ([]*model.Hero, error)
 	}
 	heroData := []*model.Hero{}
 	for _, rawHero := range allHeroes {
-		abilities := []*model.HeroAbility{}
-		for _, rawAbility := range abilities {
-			ability := model.HeroAbility{
-				Name:        rawAbility.Name,
-				Description: rawAbility.Description,
-				DamageType:  rawAbility.DamageType,
-				Behaviour:   rawAbility.Behaviour,
-			}
-			abilities = append(abilities, &ability)
-		}
-		hero := model.Hero{
-			Name:             rawHero.HeroName,
-			Abilities:        abilities,
-			PrimaryAttribute: model.Attribute(rawHero.PrimaryAttribute),
-		}
-		heroData = append(heroData, &hero)
+		hero := TransformHero(&rawHero)
+		heroData = append(heroData, hero)
 	}
 	return heroData, nil
 }
 
 func (r *queryResolver) GetHero(ctx context.Context, name *string) (*model.Hero, error) {
-	panic(fmt.Errorf("not implemented"))
+	rawHero, err := r.constantDataService.GetHero(*name)
+	if err != nil {
+		return &model.Hero{}, err
+	}
+	return TransformHero(&rawHero), nil
 }
 
 func (r *queryResolver) GetAllItems(ctx context.Context) ([]*model.Item, error) {
-	panic(fmt.Errorf("not implemented"))
+	rawItems := r.constantDataService.GetAllItems()
+	items := []*model.Item{}
+	for _, rawItem := range rawItems {
+		item := TransformItem(&rawItem)
+		items = append(items, item)
+	}
+	return items, nil
 }
 
 func (r *queryResolver) GetItem(ctx context.Context, name *string) (*model.Item, error) {
-	panic(fmt.Errorf("not implemented"))
+	rawItem, err := r.constantDataService.GetItem(*name)
+	if err != nil {
+		return &model.Item{}, err
+	}
+	return TransformItem(&rawItem), nil
 }
 
 func (r *queryResolver) GetMatchDetails(ctx context.Context, ids []int) ([]*model.Match, error) {
