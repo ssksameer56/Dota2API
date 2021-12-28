@@ -140,6 +140,9 @@ type Mutation{
     unMarkHeroAsFavourite(heroID: Int!, userID: Int!): Boolean!,
 }
 
+"""
+Gets Latest Match IDs
+"""
 type Subscription{
     getLiveMatchIDs: [Int!]!
 }
