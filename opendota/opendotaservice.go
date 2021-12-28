@@ -59,7 +59,6 @@ func (od *OpenDotaService) GetAllHeroes(pctx context.Context) *map[int](opendota
 			}
 		}
 	}
-
 	return &finalHeroes
 }
 
@@ -116,42 +115,42 @@ func (od *OpenDotaService) GetAbilities(pctx context.Context) (opendota.AbilityD
 	return abilities, nil
 }
 
-func (od *OpenDotaService) GetLatestMatches(pctx context.Context) []int {
+func (od *OpenDotaService) GetLatestMatches(pctx context.Context) ([]int, error) {
 	query := "live"
 	data, err := od.client.GetData(pctx, query)
 	matches := []opendota.Match{}
 	matchIDs := []int{}
 	if err != nil {
 		utils.LogError("Error when getting matches: "+err.Error(), "GetLatestMatches")
-		return matchIDs
+		return matchIDs, err
 	}
 	err = json.Unmarshal(data, &matches)
 	if err != nil {
 		utils.LogError("Error when parsing match details: "+err.Error(), "GetLatestMatches")
-		return matchIDs
+		return matchIDs, err
 	}
 
 	for _, v := range matches {
 		matchIDs = append(matchIDs, v.MatchID)
 	}
-	return matchIDs
+	return matchIDs, nil
 }
 
-func (od *OpenDotaService) GetMatchDetails(pctx context.Context, matchID int) opendota.MatchDetails {
+func (od *OpenDotaService) GetMatchDetails(pctx context.Context, matchID int) (opendota.MatchDetails, error) {
 	query := "matches/%d"
 	fmtQuery := fmt.Sprintf(query, matchID)
 	data, err := od.client.GetData(pctx, fmtQuery)
 	matchDetails := opendota.MatchDetails{}
 	if err != nil {
 		utils.LogError("Error when getting match details: "+err.Error(), "GetMatchDetails")
-		return matchDetails
+		return matchDetails, err
 	}
 	err = json.Unmarshal(data, &matchDetails)
 	if err != nil {
 		utils.LogError("Error when parsing match details: "+err.Error(), "GetMatchDetails")
-		return matchDetails
+		return matchDetails, err
 	}
-	return matchDetails
+	return matchDetails, nil
 }
 
 func NewOpenDotaService(isPremium bool) *OpenDotaService {

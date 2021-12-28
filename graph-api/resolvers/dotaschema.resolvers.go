@@ -6,6 +6,7 @@ package resolvers
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	server "github.com/ssksameer56/Dota2API/graph-api/api"
 	model "github.com/ssksameer56/Dota2API/models/graph"
@@ -15,6 +16,7 @@ import (
 func (r *mutationResolver) MarkHeroAsFavourite(ctx context.Context, heroID int, userID int) (bool, error) {
 	_, err := r.favouritesService.MarkFavouritesForAUser(ctx, userID, []int{heroID})
 	if err != nil {
+		utils.LogError("could not mark hero as favourite:"+err.Error(), "Graph Resolver")
 		return false, errors.New("could not mark hero as favourite")
 	}
 	return true, err
@@ -23,8 +25,10 @@ func (r *mutationResolver) MarkHeroAsFavourite(ctx context.Context, heroID int, 
 func (r *mutationResolver) UnMarkHeroAsFavourite(ctx context.Context, heroID int, userID int) (bool, error) {
 	existingIDs, err := r.favouritesService.QueryFavouritesOfAUser(ctx, userID)
 	if err != nil {
-		return false, errors.New("could not mark hero as favourite")
+		utils.LogError("could not unmark hero as favourite"+err.Error(), "Graph Resolver")
+		return false, errors.New("could not unmark hero as favourite")
 	} else if len(existingIDs) == 0 {
+		utils.LogError("no favourites exist for this user"+err.Error(), "Graph Resolver")
 		return false, errors.New("no favourites exist for this user")
 	}
 	removedData := []int{}
@@ -36,6 +40,7 @@ func (r *mutationResolver) UnMarkHeroAsFavourite(ctx context.Context, heroID int
 	}
 	_, err = r.favouritesService.MarkFavouritesForAUser(ctx, userID, removedData)
 	if err != nil {
+		utils.LogError("no favourites exist for this user"+err.Error(), "Graph Resolver")
 		return false, err
 	}
 	return true, err
@@ -45,6 +50,7 @@ func (r *queryResolver) GetAllHeroes(ctx context.Context) ([]*model.Hero, error)
 	allHeroes := r.constantDataService.GetAllHeroes()
 	if len(allHeroes) == 0 {
 		hero := model.Hero{}
+		utils.LogError("no heroes present", "Graph Resolver")
 		return []*model.Hero{&hero}, errors.New("no heroes present")
 	}
 	heroData := []*model.Hero{}
@@ -58,6 +64,7 @@ func (r *queryResolver) GetAllHeroes(ctx context.Context) ([]*model.Hero, error)
 func (r *queryResolver) GetHero(ctx context.Context, name *string) (*model.Hero, error) {
 	rawHero, err := r.constantDataService.GetHero(*name)
 	if err != nil {
+		utils.LogError(fmt.Sprintf("no hero present with name %s : %s", *name, err.Error()), "Graph Resolver")
 		return &model.Hero{}, err
 	}
 	return TransformHero(rawHero), nil
@@ -66,6 +73,10 @@ func (r *queryResolver) GetHero(ctx context.Context, name *string) (*model.Hero,
 func (r *queryResolver) GetAllItems(ctx context.Context) ([]*model.Item, error) {
 	rawItems := r.constantDataService.GetAllItems()
 	items := []*model.Item{}
+	if len(rawItems) == 0 {
+		utils.LogError("no items present", "Graph Resolver")
+		return []*model.Item{}, errors.New("no items present")
+	}
 	for _, rawItem := range rawItems {
 		item := TransformItem(rawItem)
 		items = append(items, item)
@@ -76,6 +87,7 @@ func (r *queryResolver) GetAllItems(ctx context.Context) ([]*model.Item, error) 
 func (r *queryResolver) GetItem(ctx context.Context, name *string) (*model.Item, error) {
 	rawItem, err := r.constantDataService.GetItem(*name)
 	if err != nil {
+		utils.LogError(fmt.Sprintf("no item present with name %s : %s", *name, err.Error()), "Graph Resolver")
 		return &model.Item{}, err
 	}
 	return TransformItem(rawItem), nil
@@ -87,16 +99,20 @@ func (r *queryResolver) GetMatchDetails(ctx context.Context, ids []int) ([]*mode
 	matchesData := []*model.Match{}
 	allHeroes, err := r.constantDataService.GetHeroDictionary()
 	if err != nil {
-		utils.LogError(err.Error(), "GraphAPI")
+		utils.LogError("couldnt fetch heroes"+err.Error(), "Graph Resolver")
 		return matchesData, err
 	}
 	allItems, err := r.constantDataService.GetItemDictionary()
 	if err != nil {
-		utils.LogError(err.Error(), "GraphAPI")
+		utils.LogError("couldnt fetch items"+err.Error(), "Graph Resolver")
 		return matchesData, err
 	}
 	for _, id := range ids {
-		data := r.matchDataService.GetMatchDetails(cctx, id)
+		data, err := r.matchDataService.GetMatchDetails(cctx, id)
+		if err != nil {
+			utils.LogError(fmt.Sprintf("couldnt fetch details for matchID %d : %s", id, err.Error()), "Graph Resolver")
+			return []*model.Match{}, err
+		}
 		finalMatch := TransformMatch(&data, allItems, allHeroes)
 		matchesData = append(matchesData, finalMatch)
 	}
@@ -106,8 +122,12 @@ func (r *queryResolver) GetMatchDetails(ctx context.Context, ids []int) ([]*mode
 func (r *subscriptionResolver) GetLiveMatchIDs(ctx context.Context) (<-chan []int, error) {
 	cctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	data := r.matchDataService.GetLiveMatchIDs(cctx)
 	matchIDchan := make(chan []int)
+	data, err := r.matchDataService.GetLiveMatchIDs(cctx)
+	if err != nil {
+		utils.LogError("couldnt fetch live match IDs"+err.Error(), "Graph Resolver")
+		return matchIDchan, err
+	}
 	matchIDchan <- data
 	return matchIDchan, nil
 }
