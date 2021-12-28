@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -30,11 +31,18 @@ func (client *HttpClient) execute(pctx context.Context, duration time.Duration, 
 	req = req.WithContext(ctx)
 	LogInfo("Executing "+req.Method+" Request. URL: "+req.URL.RequestURI(), "Execute HTTP Request")
 	res, err := client.httpClient.Do(req)
+
 	if err != nil {
 		LogError("Error executing request: "+err.Error(), "Execute HTTP Request")
 		return nil, err
 	}
 	defer res.Body.Close()
+
+	if !(res.StatusCode >= 200 && res.StatusCode < 300) {
+		LogError(fmt.Sprintf("Error from server: %s", res.Status), "Execute HTTP Request")
+		return nil, err
+	}
+
 	data, err := io.ReadAll(res.Body)
 	if err != nil {
 		LogError("Error reading response: "+err.Error(), "Execute HTTP Request")

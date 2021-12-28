@@ -13,13 +13,13 @@ type MatchDataHandler struct {
 }
 
 //Get IDs of matches being currently played
-func (mh *MatchDataHandler) GetLiveMatchIDs(pctx context.Context) ([]int, error) {
+func (mh *MatchDataHandler) GetLiveMatchIDs(pctx context.Context) ([]int64, error) {
 	ctx, cancel := context.WithCancel(pctx)
 	defer cancel()
 	matches, err := mh.dota2service.GetLatestMatches(ctx)
 	if err != nil {
 		utils.LogError("Cant fetch live match IDs: "+err.Error(), "GetLiveMatchIDs")
-		return []int{}, err
+		return []int64{}, err
 	}
 	return matches, nil
 }

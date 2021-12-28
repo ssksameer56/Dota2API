@@ -1,17 +1,17 @@
 package opendota
 
-type ability struct {
-	Name            string `json:"dname"`
-	DamageType      string `json:"dmg_type"`
-	Description     string `json:"desc"`
-	AbilityBehavior string `json:"behavior"`
-	ExtraData       interface{}
+type Ability struct {
+	Name        string `json:"dname"`
+	DamageType  string `json:"dmg_type"`
+	Description string `json:"desc"`
+	//AbilityBehavior string `json:"behavior"`
+	ExtraData interface{}
 }
 
 type Hero struct {
 	Id               int    `json:"id"`
 	HeroName         string `json:"localized_name"`
-	Abilities        []ability
+	Abilities        []Ability
 	NPCName          string   `json:"name"`
 	PrimaryAttribute string   `json:"primary_attr"`
 	AttackType       string   `json:"attack_type"`
@@ -35,7 +35,7 @@ type HeroAbilityData struct {
 }
 
 //Abilities as returned by opendota in raw format
-type AbilityData map[string]ability
+type AbilityData map[string]Ability
 
 //Items as returned by OpenDota in raw format
 type Items map[string]Item

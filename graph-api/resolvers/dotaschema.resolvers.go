@@ -128,7 +128,7 @@ func (r *subscriptionResolver) GetLiveMatchIDs(ctx context.Context) (<-chan []in
 		utils.LogError("couldnt fetch live match IDs"+err.Error(), "Graph Resolver")
 		return matchIDchan, err
 	}
-	matchIDchan <- data
+	matchIDchan <- []int{int(data[0])}
 	return matchIDchan, nil
 }
 

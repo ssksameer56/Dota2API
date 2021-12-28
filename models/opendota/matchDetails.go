@@ -37,7 +37,7 @@ type Player struct {
 	ExtraData interface{}
 }
 type Match struct {
-	MatchID        int      `json:"match_id"`
+	MatchID        string   `json:"match_id"`
 	AccountDetails []Player `json:"players"`
 	ExtraData      interface{}
 }

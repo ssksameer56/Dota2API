@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/ssksameer56/Dota2API/models/opendota"
 	"github.com/ssksameer56/Dota2API/utils"
@@ -31,31 +32,33 @@ func (od *OpenDotaService) GetAllHeroes(pctx context.Context) *map[int](opendota
 		utils.LogError("Error when parsing heroes: "+err.Error(), "GetAllHeroes")
 		return &finalHeroes
 	}
-
+	utils.LogInfo(fmt.Sprintf("Fetched %d heroes", len(heroes)), "GetAllHeroes")
 	for _, heroData := range heroes {
 		finalHeroes[heroData.Id] = heroData
 	}
 
-	heroAbilities, err := od.GetHeroAbilities(pctx)
+	heroAbilities, err := od.getHeroAbilities(pctx)
+	utils.LogInfo(fmt.Sprintf("Fetched %d abilities", len(heroAbilities)), "GetAllHeroes")
 
 	if err != nil {
 		utils.LogError("Error when getting abilities: "+err.Error(), "GetAllHeroes")
 		return &finalHeroes
 	}
-	abilities, err := od.GetAbilities(pctx)
+	abilities, err := od.getAbilities(pctx)
+	utils.LogInfo("Fetched all abilities data", "GetAllHeroes")
 
 	if err != nil {
 		utils.LogError("Error when getting abilities: "+err.Error(), "GetAllHeroes")
 		return &finalHeroes
 	}
-
 	for _, abilites := range heroAbilities {
 		for _, hero := range heroes {
 			if hero.NPCName == abilites.NPCName {
-				for ability := range abilities {
-					data := abilities[ability]
+				for _, abilityName := range abilites.AbilityNames {
+					data := abilities[abilityName]
 					hero.Abilities = append(hero.Abilities, data)
 				}
+				finalHeroes[hero.Id] = hero
 			}
 		}
 	}
@@ -74,52 +77,63 @@ func (od *OpenDotaService) GetAllItems(pctx context.Context) *map[int]opendota.I
 
 	err = json.Unmarshal(data, &rawItems)
 	if err != nil {
-		utils.LogError("Error when parsing heroes: "+err.Error(), "GetAllItems")
+		utils.LogError("Error when parsing items: "+err.Error(), "GetAllItems")
 		return &items
 	}
 	for _, data := range rawItems {
 		items[data.Id] = data
 	}
+	utils.LogInfo(fmt.Sprintf("Got %d items", len(items)), "GetAllItems")
 	return &items
 }
 
-func (od *OpenDotaService) GetHeroAbilities(pctx context.Context) ([]opendota.HeroAbilityData, error) {
+func (od *OpenDotaService) getHeroAbilities(pctx context.Context) ([]opendota.HeroAbilityData, error) {
 	query := "constants/hero_abilities"
+	rawAbilityData := make(map[string]opendota.HeroAbilityData)
 	abilities := []opendota.HeroAbilityData{}
 	data, err := od.client.GetData(pctx, query)
 	if err != nil {
-		utils.LogError("Error when getting heroes: "+err.Error(), "GetAllItems")
+		utils.LogError("Error when getting hero abilities: "+err.Error(), "GetHeroAbilities")
 		return abilities, err
 	}
-	err = json.Unmarshal(data, &abilities)
+	err = json.Unmarshal(data, &rawAbilityData)
+	for npcName, rawData := range rawAbilityData {
+		ability := opendota.HeroAbilityData{
+			NPCName:      npcName,
+			AbilityNames: rawData.AbilityNames,
+		}
+		abilities = append(abilities, ability)
+	}
 	if err != nil {
-		utils.LogError("Error when parsing heroes: "+err.Error(), "GetAllItems")
+		utils.LogError("Error when parsing hero abilites: "+err.Error(), "GetHeroAbilities")
 		return abilities, err
 	}
+	utils.LogInfo(fmt.Sprintf("Got %d abilities", len(abilities)), "GetHeroAbilities")
 	return abilities, nil
 }
 
-func (od *OpenDotaService) GetAbilities(pctx context.Context) (opendota.AbilityData, error) {
-	query := "constants/abilites"
+func (od *OpenDotaService) getAbilities(pctx context.Context) (opendota.AbilityData, error) {
+	query := "constants/abilities"
 	abilities := opendota.AbilityData{}
 	data, err := od.client.GetData(pctx, query)
 	if err != nil {
-		utils.LogError("Error when getting heroes: "+err.Error(), "GetAllItems")
+		utils.LogError("Error when getting abilities: "+err.Error(), "GetAbilities")
 		return abilities, err
 	}
 	err = json.Unmarshal(data, &abilities)
 	if err != nil {
-		utils.LogError("Error when parsing heroes: "+err.Error(), "GetAllItems")
+		utils.LogError("Error when parsing abilities: "+err.Error(), "GetAbilities")
 		return abilities, err
 	}
+	utils.LogInfo(fmt.Sprintf("Got %d abilities", len(abilities)), "GetAbilities")
 	return abilities, nil
 }
 
-func (od *OpenDotaService) GetLatestMatches(pctx context.Context) ([]int, error) {
+func (od *OpenDotaService) GetLatestMatches(pctx context.Context) ([]int64, error) {
 	query := "live"
 	data, err := od.client.GetData(pctx, query)
 	matches := []opendota.Match{}
-	matchIDs := []int{}
+	matchIDs := []int64{}
 	if err != nil {
 		utils.LogError("Error when getting matches: "+err.Error(), "GetLatestMatches")
 		return matchIDs, err
@@ -131,7 +145,8 @@ func (od *OpenDotaService) GetLatestMatches(pctx context.Context) ([]int, error)
 	}
 
 	for _, v := range matches {
-		matchIDs = append(matchIDs, v.MatchID)
+		val, _ := strconv.Atoi(v.MatchID)
+		matchIDs = append(matchIDs, int64(val))
 	}
 	return matchIDs, nil
 }
