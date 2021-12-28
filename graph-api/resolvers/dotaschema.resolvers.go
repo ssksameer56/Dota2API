@@ -6,10 +6,10 @@ package resolvers
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	server "github.com/ssksameer56/Dota2API/graph-api/api"
 	model "github.com/ssksameer56/Dota2API/models/graph"
+	"github.com/ssksameer56/Dota2API/utils"
 )
 
 func (r *mutationResolver) MarkHeroAsFavourite(ctx context.Context, heroID int, userID int) (bool, error) {
@@ -49,7 +49,7 @@ func (r *queryResolver) GetAllHeroes(ctx context.Context) ([]*model.Hero, error)
 	}
 	heroData := []*model.Hero{}
 	for _, rawHero := range allHeroes {
-		hero := TransformHero(&rawHero)
+		hero := TransformHero(rawHero)
 		heroData = append(heroData, hero)
 	}
 	return heroData, nil
@@ -60,14 +60,14 @@ func (r *queryResolver) GetHero(ctx context.Context, name *string) (*model.Hero,
 	if err != nil {
 		return &model.Hero{}, err
 	}
-	return TransformHero(&rawHero), nil
+	return TransformHero(rawHero), nil
 }
 
 func (r *queryResolver) GetAllItems(ctx context.Context) ([]*model.Item, error) {
 	rawItems := r.constantDataService.GetAllItems()
 	items := []*model.Item{}
 	for _, rawItem := range rawItems {
-		item := TransformItem(&rawItem)
+		item := TransformItem(rawItem)
 		items = append(items, item)
 	}
 	return items, nil
@@ -78,15 +78,38 @@ func (r *queryResolver) GetItem(ctx context.Context, name *string) (*model.Item,
 	if err != nil {
 		return &model.Item{}, err
 	}
-	return TransformItem(&rawItem), nil
+	return TransformItem(rawItem), nil
 }
 
 func (r *queryResolver) GetMatchDetails(ctx context.Context, ids []int) ([]*model.Match, error) {
-	panic(fmt.Errorf("not implemented"))
+	cctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	matchesData := []*model.Match{}
+	allHeroes, err := r.constantDataService.GetHeroDictionary()
+	if err != nil {
+		utils.LogError(err.Error(), "GraphAPI")
+		return matchesData, err
+	}
+	allItems, err := r.constantDataService.GetItemDictionary()
+	if err != nil {
+		utils.LogError(err.Error(), "GraphAPI")
+		return matchesData, err
+	}
+	for _, id := range ids {
+		data := r.matchDataService.GetMatchDetails(cctx, id)
+		finalMatch := TransformMatch(&data, allItems, allHeroes)
+		matchesData = append(matchesData, finalMatch)
+	}
+	return matchesData, nil
 }
 
 func (r *subscriptionResolver) GetLiveMatchIDs(ctx context.Context) (<-chan []int, error) {
-	panic(fmt.Errorf("not implemented"))
+	cctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	data := r.matchDataService.GetLiveMatchIDs(cctx)
+	matchIDchan := make(chan []int)
+	matchIDchan <- data
+	return matchIDchan, nil
 }
 
 // Mutation returns server.MutationResolver implementation.

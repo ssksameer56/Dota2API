@@ -9,4 +9,5 @@ import "github.com/ssksameer56/Dota2API/handlers"
 type Resolver struct {
 	favouritesService   handlers.FavouritesHandler
 	constantDataService handlers.Dota2Handler
+	matchDataService    handlers.MatchDataHandler
 }
