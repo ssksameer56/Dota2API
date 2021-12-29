@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/ssksameer56/Dota2API/models/opendota"
 	"github.com/ssksameer56/Dota2API/utils"
@@ -56,7 +57,7 @@ func (od *OpenDotaService) GetAllHeroes(pctx context.Context) *map[int](opendota
 			if hero.NPCName == abilites.NPCName {
 				for _, abilityName := range abilites.AbilityNames {
 					data := abilities[abilityName]
-					hero.Abilities = append(hero.Abilities, data)
+					hero.Abilities = append(hero.Abilities, *data)
 				}
 				finalHeroes[hero.Id] = hero
 			}
@@ -125,6 +126,21 @@ func (od *OpenDotaService) getAbilities(pctx context.Context) (opendota.AbilityD
 		utils.LogError("Error when parsing abilities: "+err.Error(), "GetAbilities")
 		return abilities, err
 	}
+	for _, ability := range abilities {
+		if len(ability.RawAbilityBehavior) > 0 {
+			first := ability.RawAbilityBehavior[0]
+			if first == '"' {
+				var data string
+				json.Unmarshal(ability.RawAbilityBehavior, &data)
+				ability.AbilityBehavior = data
+			} else if first == '[' {
+				strArray := []string{}
+				json.Unmarshal(ability.RawAbilityBehavior, &strArray)
+				ability.AbilityBehavior = strings.Join(strArray, ",")
+			}
+		}
+	}
+
 	utils.LogInfo(fmt.Sprintf("Got %d abilities", len(abilities)), "GetAbilities")
 	return abilities, nil
 }
@@ -148,6 +164,8 @@ func (od *OpenDotaService) GetLatestMatches(pctx context.Context) ([]int64, erro
 		val, _ := strconv.Atoi(v.MatchID)
 		matchIDs = append(matchIDs, int64(val))
 	}
+	utils.LogInfo(fmt.Sprintf("Got %d matches being played currently", len(matchIDs)), "GetLatestMatches")
+
 	return matchIDs, nil
 }
 
