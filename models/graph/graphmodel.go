@@ -57,9 +57,9 @@ type Match struct {
 	DireKills             int           `json:"direKills"`
 	RadiantKills          int           `json:"radiantKills"`
 	Duration              int           `json:"duration"`
-	GameMode              string        `json:"gameMode"`
-	GoldAdvantage         int           `json:"goldAdvantage"`
-	XpAdvantage           int           `json:"xpAdvantage"`
+	GameMode              int           `json:"gameMode"`
+	GoldAdvantage         []int         `json:"goldAdvantage"`
+	XpAdvantage           []int         `json:"xpAdvantage"`
 	RadiantTowersKilled   int           `json:"radiantTowersKilled"`
 	DireTowersKilled      int           `json:"direTowersKilled"`
 	RadiantBarracksKilled int           `json:"radiantBarracksKilled"`

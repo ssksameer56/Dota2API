@@ -43,5 +43,17 @@ func TestGetLiveMatches(t *testing.T) {
 	}
 }
 func TestGetMatchDetails(t *testing.T) {
-
+	odClient := opendota.NewOpenDotaService(false)
+	matchID := 4080778303 //OG LGD TI8 Game 4
+	data, err := odClient.GetMatchDetails(context.Background(), int(matchID))
+	if err != nil {
+		t.Errorf("Couldn't get match details:" + err.Error())
+		t.FailNow()
+	}
+	if data.MatchID != int(matchID) {
+		t.FailNow()
+	}
+	if len(data.PlayerDetails) < 10 {
+		t.FailNow()
+	}
 }

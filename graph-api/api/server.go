@@ -681,9 +681,9 @@ type Match{
     direKills: Int!,
     radiantKills: Int!,
     duration: Int!,
-    gameMode: String!,
-    goldAdvantage: Int!,
-    xpAdvantage: Int!,
+    gameMode: Int!, 
+    goldAdvantage: [Int!]!, 
+    xpAdvantage: [Int!]!, 
     radiantTowersKilled: Int!,
     direTowersKilled: Int!,
     radiantBarracksKilled: Int!,
@@ -711,6 +711,9 @@ type Mutation{
     unMarkHeroAsFavourite(heroID: Int!, userID: Int!): Boolean!,
 }
 
+"""
+Gets Latest Match IDs
+"""
 type Subscription{
     getLiveMatchIDs: [Int!]!
 }
@@ -1883,9 +1886,9 @@ func (ec *executionContext) _Match_gameMode(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Match_goldAdvantage(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
@@ -1918,9 +1921,9 @@ func (ec *executionContext) _Match_goldAdvantage(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.([]int)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNInt2ᚕintᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Match_xpAdvantage(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
@@ -1953,9 +1956,9 @@ func (ec *executionContext) _Match_xpAdvantage(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.([]int)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNInt2ᚕintᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Match_radiantTowersKilled(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
