@@ -124,7 +124,7 @@ type Match{
 """
 All the Queries possible
 """
-type Query{
+type Query {
     getAllHeroes : [Hero!]!,
     getHero(name: String): Hero!,
     getAllItems: [Item!]!,

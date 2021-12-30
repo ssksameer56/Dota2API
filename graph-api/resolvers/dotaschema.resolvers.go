@@ -40,7 +40,7 @@ func (r *mutationResolver) UnMarkHeroAsFavourite(ctx context.Context, heroID int
 	}
 	_, err = r.favouritesService.MarkFavouritesForAUser(ctx, userID, removedData)
 	if err != nil {
-		utils.LogError("no favourites exist for this user"+err.Error(), "Graph Resolver")
+		utils.LogError("couldn't update favourites for the user"+err.Error(), "Graph Resolver")
 		return false, err
 	}
 	return true, err
