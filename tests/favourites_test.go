@@ -84,3 +84,52 @@ func TestMarkHeroesToFavourites(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestMarkHeroesToFavouritesEmptyArray(t *testing.T) {
+	conn := database.SqlConnection{
+		ConnectionString: connString,
+		DatabaseName:     DatabaseName,
+		DriverName:       driver,
+	}
+
+	fh := handlers.FavouritesHandler{
+		MysqlConn:       conn,
+		FavouritesTable: "Favourites",
+	}
+	res, err := fh.MarkFavouritesForAUser(context.Background(), -3, []int{})
+	if err != nil {
+		t.Errorf("couldn't get favourites:" + err.Error())
+		t.FailNow()
+	}
+	if !res {
+		t.FailNow()
+	}
+	data, err := fh.QueryFavouritesOfAUser(context.Background(), -3)
+	if err != nil {
+		t.Errorf("couldn't get favourites:" + err.Error())
+	}
+	if len(data) != 0 {
+		t.FailNow()
+	}
+}
+
+func TestGetNextUserID(t *testing.T) {
+	conn := database.SqlConnection{
+		ConnectionString: connString,
+		DatabaseName:     DatabaseName,
+		DriverName:       driver,
+	}
+
+	fh := handlers.FavouritesHandler{
+		MysqlConn:       conn,
+		FavouritesTable: "Favourites",
+	}
+	res, err := fh.GetNextUserID(context.Background())
+	if err != nil {
+		t.Errorf("couldn't get favourites:" + err.Error())
+		t.FailNow()
+	}
+	if res != 0 {
+		t.FailNow()
+	}
+}

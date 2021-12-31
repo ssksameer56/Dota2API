@@ -135,7 +135,7 @@ func (handler *FavouritesHandler) MarkFavouritesForAUser(pctx context.Context, u
 
 //Gets the next UserID
 func (handler *FavouritesHandler) GetNextUserID(pctx context.Context) (int, error) {
-	query := fmt.Sprintf("SELECT MAX(UserID),HeroIDs FROM %s", handler.FavouritesTable)
+	query := fmt.Sprintf("SELECT UserID,HeroID FROM %s ORDER BY UserID DESC", handler.FavouritesTable)
 	ctx, cancel := context.WithCancel(pctx)
 	defer cancel()
 
