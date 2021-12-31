@@ -7,3 +7,5 @@ CREATE TABLE Favourites (
     HeroID VARCHAR(200),
     PRIMARY KEY (UserID)
 );
+
+INSERT INTO Favourites VALUES(-1,'122,13,134')

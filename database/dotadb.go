@@ -30,9 +30,9 @@ func (conn *SqlConnection) QueryFavouritesTable(pctx context.Context, dbConn *sq
 	result := []database.DBModelFavourites{}
 	for rows.Next() {
 		newRow := database.DBModelFavourites{}
-		err := rows.Scan(&newRow)
+		err := rows.Scan(&newRow.UserID, &newRow.HeroIDs)
 		if err != nil {
-			utils.LogError("erro reading entry: "+err.Error(), "QueryFavouritesTable")
+			utils.LogError("error reading entry: "+err.Error(), "QueryFavouritesTable")
 			return nil, err
 		}
 		result = append(result, newRow)

@@ -12,7 +12,7 @@ import (
 )
 
 type FavouritesHandler struct {
-	mysqlConn       database.SqlConnection
+	MysqlConn       database.SqlConnection
 	FavouritesTable string
 }
 
@@ -23,24 +23,27 @@ func (handler *FavouritesHandler) QueryFavouritesOfAUser(pctx context.Context, u
 	ctx, cancel := context.WithCancel(pctx)
 	defer cancel()
 
-	dbConn, err := sql.Open(handler.mysqlConn.DriverName, handler.mysqlConn.ConnectionString)
+	dbConn, err := sql.Open(handler.MysqlConn.DriverName, handler.MysqlConn.ConnectionString)
 	if err != nil {
 		utils.LogError("cannot open connection to DB: "+err.Error(), "QueryFavouritesTable")
 	}
 	defer dbConn.Close()
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE USERID = %d", handler.FavouritesTable, userID)
-	data, err := mysqlhandler.mysqlConn.QueryFavouritesTable(ctx, dbConn, query)
+	data, err := mysqlhandler.MysqlConn.QueryFavouritesTable(ctx, dbConn, query)
 	if err != nil {
 		utils.LogInfo("Error in getting data from database", "QueryFavouritesOfAUser")
 		return []int{}, err
 	}
-	row := (*data)[0]
-	rowData := strings.Split(row.HeroIDs, ",")
 	heroIDs := []int{}
-	for _, id := range rowData {
-		id_int, _ := strconv.Atoi(id)
-		heroIDs = append(heroIDs, id_int)
+	if len(*data) > 0 {
+		row := (*data)[0]
+		rowData := strings.Split(row.HeroIDs, ",")
+		for _, id := range rowData {
+			id_int, _ := strconv.Atoi(id)
+			heroIDs = append(heroIDs, id_int)
+		}
+
 	}
 	return heroIDs, nil
 }
@@ -50,7 +53,7 @@ func (handler *FavouritesHandler) InsertFavouritesForAUser(pctx context.Context,
 	formattedIDs := []string{}
 	if len(heroIDs) == 0 {
 		utils.LogInfo("no hero ids provided", "InsertFavouritesForAUser")
-		return false, nil
+		return true, nil
 	}
 	for _, id := range heroIDs {
 		formattedIDs = append(formattedIDs, fmt.Sprintf("%d", id))
@@ -60,14 +63,14 @@ func (handler *FavouritesHandler) InsertFavouritesForAUser(pctx context.Context,
 	ctx, cancel := context.WithCancel(pctx)
 	defer cancel()
 
-	dbConn, err := sql.Open(handler.mysqlConn.DriverName, handler.mysqlConn.ConnectionString)
+	dbConn, err := sql.Open(handler.MysqlConn.DriverName, handler.MysqlConn.ConnectionString)
 	if err != nil {
 		utils.LogError("cannot open connection to DB: "+err.Error(), "InsertFavouritesForAUser")
 	}
 	defer dbConn.Close()
 
 	query := fmt.Sprintf("INSERT INTO %s VALUES (%d, '%s')", handler.FavouritesTable, userID, data)
-	res, err := mysqlhandler.mysqlConn.ModifyFavouritesTable(ctx, dbConn, query)
+	res, err := mysqlhandler.MysqlConn.ModifyFavouritesTable(ctx, dbConn, query)
 	if err != nil {
 		utils.LogError("error inserting data: "+err.Error(), "InsertFavouritesForAUser")
 		return false, err
@@ -79,6 +82,10 @@ func (handler *FavouritesHandler) InsertFavouritesForAUser(pctx context.Context,
 //Updates the favourites of a certain userID
 func (handler *FavouritesHandler) UpdateFavouritesForAUser(pctx context.Context, userID int, heroIDs []int) (bool, error) {
 	formattedIDs := []string{}
+	if len(heroIDs) == 0 {
+		utils.LogInfo("no hero ids provided", "UpdateFavouritesForAUser")
+		return true, nil
+	}
 	for _, id := range heroIDs {
 		formattedIDs = append(formattedIDs, fmt.Sprintf("%d", id))
 	}
@@ -87,14 +94,14 @@ func (handler *FavouritesHandler) UpdateFavouritesForAUser(pctx context.Context,
 	ctx, cancel := context.WithCancel(pctx)
 	defer cancel()
 
-	dbConn, err := sql.Open(handler.mysqlConn.DriverName, handler.mysqlConn.ConnectionString)
+	dbConn, err := sql.Open(handler.MysqlConn.DriverName, handler.MysqlConn.ConnectionString)
 	if err != nil {
 		utils.LogError("cannot open connection to DB: "+err.Error(), "UpdateFavouritesForAUser")
 	}
 	defer dbConn.Close()
 
 	query := fmt.Sprintf("UPDATE %s SET HeroID='%s' where UserID=%d", handler.FavouritesTable, data, userID)
-	res, err := mysqlhandler.mysqlConn.ModifyFavouritesTable(ctx, dbConn, query)
+	res, err := mysqlhandler.MysqlConn.ModifyFavouritesTable(ctx, dbConn, query)
 	if err != nil {
 		utils.LogError("error inserting data: "+err.Error(), "UpdateFavouritesForAUser")
 		return false, err
@@ -132,13 +139,13 @@ func (handler *FavouritesHandler) GetNextUserID(pctx context.Context) (int, erro
 	ctx, cancel := context.WithCancel(pctx)
 	defer cancel()
 
-	dbConn, err := sql.Open(handler.mysqlConn.DriverName, handler.mysqlConn.ConnectionString)
+	dbConn, err := sql.Open(handler.MysqlConn.DriverName, handler.MysqlConn.ConnectionString)
 	if err != nil {
 		utils.LogError("cannot open connection to DB: "+err.Error(), "GetNextUserID")
 	}
 	defer dbConn.Close()
 
-	data, err := mysqlhandler.mysqlConn.QueryFavouritesTable(ctx, dbConn, query)
+	data, err := mysqlhandler.MysqlConn.QueryFavouritesTable(ctx, dbConn, query)
 	if err != nil {
 		utils.LogInfo("Error in getting max ID from database", "GetNextUserID")
 		return -1, err
