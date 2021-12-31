@@ -3,5 +3,6 @@
     "isProduction":"No",
     "apiKey": "{{Insert OpenDota Key Here}}",
     "graphAPIPort":5000,
-    "restAPIPort":5001
+    "restAPIPort":5001,
+    "connectionString":"user:password@tcp(127.0.0.1:3306)/DotaDatabase"
 }

@@ -18,14 +18,6 @@ type SqlConnection struct {
 	DriverName       string
 }
 
-func InitalizeDBConnection(connString string, dbName string) *SqlConnection {
-	return &SqlConnection{
-		DatabaseName:     dbName,
-		ConnectionString: connString,
-		DriverName:       "mysql",
-	}
-}
-
 //Returns rows from the Favourites Table
 func (conn *SqlConnection) QueryFavouritesTable(pctx context.Context, dbConn *sql.DB, query string) (*[]database.DBModelFavourites, error) {
 

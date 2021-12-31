@@ -62,7 +62,7 @@ func (handler *FavouritesHandler) InsertFavouritesForAUser(pctx context.Context,
 
 	dbConn, err := sql.Open(handler.mysqlConn.DriverName, handler.mysqlConn.ConnectionString)
 	if err != nil {
-		utils.LogError("cannot open connection to DB: "+err.Error(), "QueryFavouritesTable")
+		utils.LogError("cannot open connection to DB: "+err.Error(), "InsertFavouritesForAUser")
 	}
 	defer dbConn.Close()
 
@@ -89,7 +89,7 @@ func (handler *FavouritesHandler) UpdateFavouritesForAUser(pctx context.Context,
 
 	dbConn, err := sql.Open(handler.mysqlConn.DriverName, handler.mysqlConn.ConnectionString)
 	if err != nil {
-		utils.LogError("cannot open connection to DB: "+err.Error(), "QueryFavouritesTable")
+		utils.LogError("cannot open connection to DB: "+err.Error(), "UpdateFavouritesForAUser")
 	}
 	defer dbConn.Close()
 
@@ -134,7 +134,7 @@ func (handler *FavouritesHandler) GetNextUserID(pctx context.Context) (int, erro
 
 	dbConn, err := sql.Open(handler.mysqlConn.DriverName, handler.mysqlConn.ConnectionString)
 	if err != nil {
-		utils.LogError("cannot open connection to DB: "+err.Error(), "QueryFavouritesTable")
+		utils.LogError("cannot open connection to DB: "+err.Error(), "GetNextUserID")
 	}
 	defer dbConn.Close()
 
