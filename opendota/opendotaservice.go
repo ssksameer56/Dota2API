@@ -179,6 +179,9 @@ func (od *OpenDotaService) GetMatchDetails(pctx context.Context, matchID int) (o
 		return matchDetails, err
 	}
 	err = json.Unmarshal(data, &matchDetails)
+	matchDetails.RadiantCurrentGoldAdvantage = matchDetails.RadiantGoldAdvantage[len(matchDetails.RadiantGoldAdvantage)-1]
+	matchDetails.RadiantCurrentXPAdvantage = matchDetails.RadiantXPAdvantage[len(matchDetails.RadiantXPAdvantage)-1]
+
 	if err != nil {
 		utils.LogError("Error when parsing match details: "+err.Error(), "GetMatchDetails")
 		return matchDetails, err
