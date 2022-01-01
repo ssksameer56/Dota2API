@@ -29,8 +29,6 @@ func (mh *MatchDataHandler) GetMatchDetails(pctx context.Context, matchID int) (
 	ctx, cancel := context.WithCancel(pctx)
 	defer cancel()
 	data, err := mh.Dota2service.GetMatchDetails(ctx, matchID)
-	data.RadiantCurrentGoldAdvantage = data.RadiantGoldAdvantage[len(data.RadiantGoldAdvantage)-1]
-	data.RadiantCurrentXPAdvantage = data.RadiantXPAdvantage[len(data.RadiantXPAdvantage)-1]
 
 	if err != nil {
 		utils.LogError("Cant fetch match details: "+err.Error(), "GetMatchDetails")
