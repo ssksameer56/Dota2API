@@ -10,5 +10,3 @@ type Dota2GameInfo struct {
 type LatestMatches struct {
 	Matches []*opendota.MatchDetails
 }
-
-type ConfigData map[string]string

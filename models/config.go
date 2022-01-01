@@ -5,4 +5,6 @@ type Configuration struct {
 	IsProduction     bool   `json:"isProduction"`
 	ApiKey           string `json:"apiKey"`
 	ConnectionString string `json:"connString"`
+	GraphAPIPort     string `json:"graphAPIPort"`
+	DatabaseName     string `json:"databaseName"`
 }

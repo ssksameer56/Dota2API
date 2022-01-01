@@ -10,7 +10,7 @@ import (
 )
 
 type Dota2Handler struct {
-	dota2service *opendota.OpenDotaService //Service to connect to OpenDota
+	Dota2service *opendota.OpenDotaService //Service to connect to OpenDota
 	GameData     *common.Dota2GameInfo     //Contains all constant data
 }
 
@@ -86,11 +86,11 @@ func (dh *Dota2Handler) GetItemDictionary() (map[int]odmodels.Item, error) {
 
 //Fetch all static data - hero and items from the Dota2Service
 func (dh *Dota2Handler) PopulateStaticData() error {
-	dh.GameData.Heroes = dh.dota2service.GetAllHeroes(context.TODO())
+	dh.GameData.Heroes = dh.Dota2service.GetAllHeroes(context.TODO())
 	if len(*(dh.GameData.Heroes)) == 0 {
 		return errors.New("got Empty Hero Data from Dota2 Service")
 	}
-	dh.GameData.Items = dh.dota2service.GetAllItems(context.TODO())
+	dh.GameData.Items = dh.Dota2service.GetAllItems(context.TODO())
 	if len(*(dh.GameData.Items)) == 0 {
 		return errors.New("got Empty Item Data from Dota2 Service")
 	}

@@ -12,11 +12,9 @@ import (
 )
 
 type FavouritesHandler struct {
-	MysqlConn       database.SqlConnection
+	MysqlConn       *database.SqlConnection
 	FavouritesTable string
 }
-
-var mysqlhandler FavouritesHandler
 
 //Queries the favourite heros of a certain user
 func (handler *FavouritesHandler) QueryFavouritesOfAUser(pctx context.Context, userID int) ([]int, error) {
@@ -30,7 +28,7 @@ func (handler *FavouritesHandler) QueryFavouritesOfAUser(pctx context.Context, u
 	defer dbConn.Close()
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE USERID = %d", handler.FavouritesTable, userID)
-	data, err := mysqlhandler.MysqlConn.QueryFavouritesTable(ctx, dbConn, query)
+	data, err := handler.MysqlConn.QueryFavouritesTable(ctx, dbConn, query)
 	if err != nil {
 		utils.LogInfo("Error in getting data from database", "QueryFavouritesOfAUser")
 		return []int{}, err
@@ -70,7 +68,7 @@ func (handler *FavouritesHandler) InsertFavouritesForAUser(pctx context.Context,
 	defer dbConn.Close()
 
 	query := fmt.Sprintf("INSERT INTO %s VALUES (%d, '%s')", handler.FavouritesTable, userID, data)
-	res, err := mysqlhandler.MysqlConn.ModifyFavouritesTable(ctx, dbConn, query)
+	res, err := handler.MysqlConn.ModifyFavouritesTable(ctx, dbConn, query)
 	if err != nil {
 		utils.LogError("error inserting data: "+err.Error(), "InsertFavouritesForAUser")
 		return false, err
@@ -101,7 +99,7 @@ func (handler *FavouritesHandler) UpdateFavouritesForAUser(pctx context.Context,
 	defer dbConn.Close()
 
 	query := fmt.Sprintf("UPDATE %s SET HeroID='%s' where UserID=%d", handler.FavouritesTable, data, userID)
-	res, err := mysqlhandler.MysqlConn.ModifyFavouritesTable(ctx, dbConn, query)
+	res, err := handler.MysqlConn.ModifyFavouritesTable(ctx, dbConn, query)
 	if err != nil {
 		utils.LogError("error inserting data: "+err.Error(), "UpdateFavouritesForAUser")
 		return false, err
@@ -145,7 +143,7 @@ func (handler *FavouritesHandler) GetNextUserID(pctx context.Context) (int, erro
 	}
 	defer dbConn.Close()
 
-	data, err := mysqlhandler.MysqlConn.QueryFavouritesTable(ctx, dbConn, query)
+	data, err := handler.MysqlConn.QueryFavouritesTable(ctx, dbConn, query)
 	if err != nil {
 		utils.LogInfo("Error in getting max ID from database", "GetNextUserID")
 		return -1, err

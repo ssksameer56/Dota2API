@@ -20,7 +20,7 @@ func TestQueryFavouritesWhereDataExists(t *testing.T) {
 	}
 
 	fh := handlers.FavouritesHandler{
-		MysqlConn:       conn,
+		MysqlConn:       &conn,
 		FavouritesTable: "Favourites",
 	}
 	data, err := fh.QueryFavouritesOfAUser(context.Background(), -1)
@@ -44,7 +44,7 @@ func TestQueryFavouritesWhereDataDoesntExists(t *testing.T) {
 	}
 
 	fh := handlers.FavouritesHandler{
-		MysqlConn:       conn,
+		MysqlConn:       &conn,
 		FavouritesTable: "Favourites",
 	}
 	data, err := fh.QueryFavouritesOfAUser(context.Background(), 0)
@@ -65,7 +65,7 @@ func TestMarkHeroesToFavourites(t *testing.T) {
 	}
 
 	fh := handlers.FavouritesHandler{
-		MysqlConn:       conn,
+		MysqlConn:       &conn,
 		FavouritesTable: "Favourites",
 	}
 	res, err := fh.MarkFavouritesForAUser(context.Background(), -2, []int{1, 2, 3, 4})
@@ -93,7 +93,7 @@ func TestMarkHeroesToFavouritesEmptyArray(t *testing.T) {
 	}
 
 	fh := handlers.FavouritesHandler{
-		MysqlConn:       conn,
+		MysqlConn:       &conn,
 		FavouritesTable: "Favourites",
 	}
 	res, err := fh.MarkFavouritesForAUser(context.Background(), -3, []int{})
@@ -121,7 +121,7 @@ func TestGetNextUserID(t *testing.T) {
 	}
 
 	fh := handlers.FavouritesHandler{
-		MysqlConn:       conn,
+		MysqlConn:       &conn,
 		FavouritesTable: "Favourites",
 	}
 	res, err := fh.GetNextUserID(context.Background())

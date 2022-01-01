@@ -1,18 +1,20 @@
 package opendota
 
 type MatchDetails struct {
-	MatchID              int            `json:"match_id"`
-	DireKills            int            `json:"dire_score"`
-	RadiantKills         int            `json:"radiant_score"`
-	Duration             int            `json:"duration"`
-	GameMode             int            `json:"game_mode"` //TODO: Map GameMode to string
-	RadiantGoldAdvantage []int          `json:"radiant_gold_adv"`
-	RadiantXPAdvantage   []int          `json:"radiant_xp_adv"`
-	DireTowersKilled     int            `json:"tower_status_dire"`
-	RadiantTowersKilled  int            `json:"tower_status_radiant"`
-	DireBarracksStatus   int            `json:"barracks_status_dire"`
-	RadiantBarrackStatus int            `json:"barracks_status_radiant"`
-	PlayerDetails        []InGamePlayer `json:"players"`
+	MatchID                     int            `json:"match_id"`
+	DireKills                   int            `json:"dire_score"`
+	RadiantKills                int            `json:"radiant_score"`
+	Duration                    int            `json:"duration"`
+	GameMode                    int            `json:"game_mode"` //TODO: Map GameMode to string
+	RadiantGoldAdvantage        []int          `json:"radiant_gold_adv"`
+	RadiantXPAdvantage          []int          `json:"radiant_xp_adv"`
+	RadiantCurrentGoldAdvantage int            `json:"radiant_current_gold_adv"`
+	RadiantCurrentXPAdvantage   int            `json:"radiant_current_xp_adv"`
+	DireTowersKilled            int            `json:"tower_status_dire"`
+	RadiantTowersKilled         int            `json:"tower_status_radiant"`
+	DireBarracksStatus          int            `json:"barracks_status_dire"`
+	RadiantBarrackStatus        int            `json:"barracks_status_radiant"`
+	PlayerDetails               []InGamePlayer `json:"players"`
 }
 
 type InGamePlayer struct {

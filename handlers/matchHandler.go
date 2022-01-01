@@ -9,14 +9,14 @@ import (
 )
 
 type MatchDataHandler struct {
-	dota2service opendota.OpenDotaService
+	Dota2service *opendota.OpenDotaService
 }
 
 //Get IDs of matches being currently played
 func (mh *MatchDataHandler) GetLiveMatchIDs(pctx context.Context) ([]int64, error) {
 	ctx, cancel := context.WithCancel(pctx)
 	defer cancel()
-	matches, err := mh.dota2service.GetLatestMatches(ctx)
+	matches, err := mh.Dota2service.GetLatestMatches(ctx)
 	if err != nil {
 		utils.LogError("Cant fetch live match IDs: "+err.Error(), "GetLiveMatchIDs")
 		return []int64{}, err
@@ -28,7 +28,10 @@ func (mh *MatchDataHandler) GetLiveMatchIDs(pctx context.Context) ([]int64, erro
 func (mh *MatchDataHandler) GetMatchDetails(pctx context.Context, matchID int) (odmodels.MatchDetails, error) {
 	ctx, cancel := context.WithCancel(pctx)
 	defer cancel()
-	data, err := mh.dota2service.GetMatchDetails(ctx, matchID)
+	data, err := mh.Dota2service.GetMatchDetails(ctx, matchID)
+	data.RadiantCurrentGoldAdvantage = data.RadiantGoldAdvantage[len(data.RadiantGoldAdvantage)-1]
+	data.RadiantCurrentXPAdvantage = data.RadiantXPAdvantage[len(data.RadiantXPAdvantage)-1]
+
 	if err != nil {
 		utils.LogError("Cant fetch match details: "+err.Error(), "GetMatchDetails")
 		return odmodels.MatchDetails{}, err
