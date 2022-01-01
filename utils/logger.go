@@ -14,7 +14,7 @@ func InitializeLogging() error {
 	if LogFilePath == "" {
 		return errors.New("please provide a path for logger")
 	}
-	var file, err = os.OpenFile(LogFilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	file, err := os.OpenFile(LogFilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		fmt.Println("Could Not Open Log File : " + err.Error())
 	}

@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
+	"sync"
 
 	"github.com/ssksameer56/Dota2API/database"
 	graphapi "github.com/ssksameer56/Dota2API/graph-api"
-	grpcapi "github.com/ssksameer56/Dota2API/grpc-api"
 	"github.com/ssksameer56/Dota2API/handlers"
 	"github.com/ssksameer56/Dota2API/models"
 	"github.com/ssksameer56/Dota2API/models/common"
@@ -20,41 +21,51 @@ func main() {
 	var config models.Configuration
 	var openDotaService *opendota.OpenDotaService
 	loadConfig(&config)
-	loadServices(openDotaService, config)
+
+	utils.LogFilePath = "../logs/log"
+	utils.InitializeLogging()
+
+	openDotaService = loadServices(config)
 	dotaHandler, matchDataHandler, favouritesHandler, err := loadHandlers(openDotaService, config)
 	if err != nil {
 		utils.LogInfo("Cant initialize handlers", "MAIN")
 		panic(1)
 	}
-	go graphapi.StartGraphServer(config, dotaHandler, favouritesHandler, matchDataHandler)
-	go grpcapi.StartGrpcServer(config, dotaHandler, matchDataHandler)
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go graphapi.StartGraphServer(config, dotaHandler, favouritesHandler, matchDataHandler, wg)
+
+	//go grpcapi.StartGrpcServer(config, dotaHandler, matchDataHandler)
+	wg.Wait()
 }
 
 //Load Config Data for the APIs
 func loadConfig(config *models.Configuration) {
 	file, err := os.Open("../config.json")
 	if err != nil {
-		fmt.Println("Cant open config")
+		fmt.Println("Cant open config" + err.Error())
 		panic(1)
 	}
 	data, err := io.ReadAll(file)
 	if err != nil {
-		fmt.Println("Cant read config")
+		fmt.Println("Cant read config" + err.Error())
 		panic(1)
 	}
 
 	err = json.Unmarshal(data, &config)
 	if err != nil {
-		fmt.Println("Cant parse config")
+		fmt.Println("Cant parse config" + err.Error())
 		panic(1)
 	}
 	utils.LogInfo("Initialised the Config", "loadConfig")
 }
 
 //Load Underlying Services such as OpenDota
-func loadServices(odService *opendota.OpenDotaService, config models.Configuration) {
-	odService = opendota.NewOpenDotaService(config.IsProduction)
+func loadServices(config models.Configuration) *opendota.OpenDotaService {
+	isProduction, _ := strconv.ParseBool(config.IsProduction)
+	odService := opendota.NewOpenDotaService(isProduction)
 	utils.LogInfo("Initialised the OpenDotaService", "loadServices")
+	return odService
 }
 
 //Load Handlers Logic that handle incoming requests

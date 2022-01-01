@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -15,7 +16,7 @@ import (
 )
 
 func StartGraphServer(config models.Configuration, dota2Handler *handlers.Dota2Handler, favHandler *handlers.FavouritesHandler,
-	matchHandler *handlers.MatchDataHandler) {
+	matchHandler *handlers.MatchDataHandler, wg sync.WaitGroup) {
 	port := "8080"
 	if config.GraphAPIPort != "" {
 		port = config.GraphAPIPort
@@ -30,5 +31,9 @@ func StartGraphServer(config models.Configuration, dota2Handler *handlers.Dota2H
 	http.Handle("/query", srv)
 
 	utils.LogInfo(fmt.Sprintf("connect to http://localhost:%s/ for GraphQL playground", port), "Graph Server")
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	err := http.ListenAndServe(":"+port, nil)
+	if err != nil {
+		log.Fatal(err)
+		wg.Done()
+	}
 }
