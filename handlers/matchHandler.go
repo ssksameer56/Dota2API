@@ -29,7 +29,6 @@ func (mh *MatchDataHandler) GetMatchDetails(pctx context.Context, matchID int) (
 	ctx, cancel := context.WithCancel(pctx)
 	defer cancel()
 	data, err := mh.Dota2service.GetMatchDetails(ctx, matchID)
-
 	if err != nil {
 		utils.LogError("Cant fetch match details: "+err.Error(), "GetMatchDetails")
 		return odmodels.MatchDetails{}, err

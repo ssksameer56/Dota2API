@@ -122,16 +122,20 @@ func (r *queryResolver) GetMatchDetails(ctx context.Context, ids []int) ([]*mode
 
 func (r *subscriptionResolver) GetLiveMatchIDs(ctx context.Context) (<-chan []int, error) {
 	cctx, cancel := context.WithCancel(ctx)
-	defer cancel()
 	matchIDchan := make(chan []int)
-	data, err := r.MatchDataService.GetLiveMatchIDs(cctx)
-	if err != nil {
-		utils.LogError("couldnt fetch live match IDs"+err.Error(), "Graph Resolver")
-		return matchIDchan, err
-	}
 	go func() {
-		for _, val := range data {
-			matchIDchan <- []int{int(val)}
+		for {
+			data, err := r.MatchDataService.GetLiveMatchIDs(cctx)
+			if err != nil {
+				utils.LogError("couldnt fetch live match IDs"+err.Error(), "Graph Resolver")
+				cancel()
+				return
+			}
+			matchIDs := []int{}
+			for _, val := range data {
+				matchIDs = append(matchIDs, int(val))
+			}
+			matchIDchan <- matchIDs
 			time.Sleep(time.Second * 2)
 		}
 	}()

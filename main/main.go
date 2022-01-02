@@ -22,7 +22,7 @@ func main() {
 	var openDotaService *opendota.OpenDotaService
 	loadConfig(&config)
 
-	utils.LogFilePath = "../logs/log"
+	utils.LogFilePath = config.LogFile
 	utils.InitializeLogging()
 
 	openDotaService = loadServices(config)

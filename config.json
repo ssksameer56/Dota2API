@@ -1,5 +1,5 @@
 {
-    "logFile":"./log",
+    "logFile":"./logs/log.log",
     "isProduction":"False",
     "apiKey": "{{Insert OpenDota Key Here}}",
     "graphAPIPort":"8080",
