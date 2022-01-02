@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -27,7 +28,7 @@ func StartGraphServer(config models.Configuration, dota2Handler *handlers.Dota2H
 		MatchDataService:    matchHandler,
 	}}))
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/", LoggingMiddleWare(playground.Handler("GraphQL playground", "/query")))
 	http.Handle("/query", srv)
 
 	utils.LogInfo(fmt.Sprintf("connect to http://localhost:%s/ for GraphQL playground", port), "Graph Server")
@@ -35,5 +36,14 @@ func StartGraphServer(config models.Configuration, dota2Handler *handlers.Dota2H
 	if err != nil {
 		log.Fatal(err)
 		wg.Done()
+	}
+}
+
+func LoggingMiddleWare(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		t := time.Now()
+		utils.LogInfo(fmt.Sprintf("{r.Method: %s, r.URL.Path: %s", r.Method, r.URL.Path), "HTTP")
+		handler(w, r)
+		utils.LogInfo(fmt.Sprintf("Time Taken: %d", time.Since(t).Milliseconds()), "HTTP")
 	}
 }

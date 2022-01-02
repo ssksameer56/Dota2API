@@ -17,6 +17,7 @@ func InitializeLogging() error {
 	file, err := os.OpenFile(LogFilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		fmt.Println("Could Not Open Log File : " + err.Error())
+		panic(1)
 	}
 	log.SetFormatter(&log.TextFormatter{
 		DisableColors: false,

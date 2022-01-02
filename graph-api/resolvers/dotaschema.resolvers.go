@@ -136,7 +136,8 @@ func (r *subscriptionResolver) GetLiveMatchIDs(ctx context.Context) (<-chan []in
 				matchIDs = append(matchIDs, int(val))
 			}
 			matchIDchan <- matchIDs
-			time.Sleep(time.Second * 2)
+			utils.LogInfo(fmt.Sprintf("Sending %d matchIDs", len(matchIDs)), "Graph Resolver")
+			time.Sleep(time.Second * 5)
 		}
 	}()
 	return matchIDchan, nil
