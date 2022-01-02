@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	server "github.com/ssksameer56/Dota2API/graph-api/api"
 	model "github.com/ssksameer56/Dota2API/models/graph"
@@ -128,7 +129,12 @@ func (r *subscriptionResolver) GetLiveMatchIDs(ctx context.Context) (<-chan []in
 		utils.LogError("couldnt fetch live match IDs"+err.Error(), "Graph Resolver")
 		return matchIDchan, err
 	}
-	matchIDchan <- []int{int(data[0])}
+	go func() {
+		for _, val := range data {
+			matchIDchan <- []int{int(val)}
+			time.Sleep(time.Second * 2)
+		}
+	}()
 	return matchIDchan, nil
 }
 
