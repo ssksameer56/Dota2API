@@ -121,6 +121,11 @@ type Match{
     direHeroes: [InGameHero!]!,
 }
 
+
+type MutationResponse{
+    done: Boolean!
+}
+
 """
 All the Queries possible
 """
@@ -136,8 +141,8 @@ type Query {
 Updates,Creates,Deletes on Heroes
 """
 type Mutation{
-    markHeroAsFavourite(heroID: Int!, userID: Int!): Boolean!,
-    unMarkHeroAsFavourite(heroID: Int!, userID: Int!): Boolean!,
+    markHeroAsFavourite(heroID: Int!, userID: Int!): MutationResponse!,
+    unMarkHeroAsFavourite(heroID: Int!, userID: Int!): MutationResponse!,
 }
 
 """

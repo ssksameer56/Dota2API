@@ -68,6 +68,10 @@ type Match struct {
 	DireHeroes            []*InGameHero `json:"direHeroes"`
 }
 
+type MutationResponse struct {
+	Done bool `json:"done"`
+}
+
 type AbilityBehavior string
 
 const (

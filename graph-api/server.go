@@ -28,7 +28,7 @@ func StartGraphServer(config models.Configuration, dota2Handler *handlers.Dota2H
 		MatchDataService:    matchHandler,
 	}}))
 
-	http.Handle("/", LoggingMiddleWare(playground.Handler("GraphQL playground", "/query")))
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
 	utils.LogInfo(fmt.Sprintf("connect to http://localhost:%s/ for GraphQL playground", port), "Graph Server")
@@ -39,11 +39,13 @@ func StartGraphServer(config models.Configuration, dota2Handler *handlers.Dota2H
 	}
 }
 
-func LoggingMiddleWare(handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		t := time.Now()
-		utils.LogInfo(fmt.Sprintf("{r.Method: %s, r.URL.Path: %s", r.Method, r.URL.Path), "HTTP")
-		handler(w, r)
-		utils.LogInfo(fmt.Sprintf("Time Taken: %d", time.Since(t).Milliseconds()), "HTTP")
-	}
+func Logger(next http.Handler) http.Handler {
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			utils.LogInfo(fmt.Sprintf("Request start: %s\n", r.URL.Path), "HTTP")
+			t := time.Now()
+			next.ServeHTTP(w, r)
+			utils.LogInfo(fmt.Sprintf("Response Done in : %d\n", time.Since(t).Milliseconds()), "HTTP")
+		},
+	)
 }

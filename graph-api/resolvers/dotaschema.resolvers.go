@@ -14,23 +14,26 @@ import (
 	"github.com/ssksameer56/Dota2API/utils"
 )
 
-func (r *mutationResolver) MarkHeroAsFavourite(ctx context.Context, heroID int, userID int) (bool, error) {
-	_, err := r.FavouritesService.MarkFavouritesForAUser(ctx, userID, []int{heroID})
+func (r *mutationResolver) MarkHeroAsFavourite(ctx context.Context, heroID int, userID int) (*model.MutationResponse, error) {
+	_, err := r.FavouritesService.MarkFavouritesForAUser(ctx, userID, []int{heroID}, false)
+	response := model.MutationResponse{Done: false}
 	if err != nil {
 		utils.LogError("could not mark hero as favourite:"+err.Error(), "Graph Resolver")
-		return false, errors.New("could not mark hero as favourite")
+		return &response, errors.New("could not mark hero as favourite")
 	}
-	return true, err
+	response.Done = true
+	return &response, err
 }
 
-func (r *mutationResolver) UnMarkHeroAsFavourite(ctx context.Context, heroID int, userID int) (bool, error) {
+func (r *mutationResolver) UnMarkHeroAsFavourite(ctx context.Context, heroID int, userID int) (*model.MutationResponse, error) {
 	existingIDs, err := r.FavouritesService.QueryFavouritesOfAUser(ctx, userID)
+	response := model.MutationResponse{Done: false}
 	if err != nil {
 		utils.LogError("could not unmark hero as favourite"+err.Error(), "Graph Resolver")
-		return false, errors.New("could not unmark hero as favourite")
+		return &response, errors.New("could not unmark hero as favourite")
 	} else if len(existingIDs) == 0 {
 		utils.LogError("no favourites exist for this user"+err.Error(), "Graph Resolver")
-		return false, errors.New("no favourites exist for this user")
+		return &response, errors.New("no favourites exist for this user")
 	}
 	removedData := []int{}
 	for _, v := range existingIDs {
@@ -39,12 +42,13 @@ func (r *mutationResolver) UnMarkHeroAsFavourite(ctx context.Context, heroID int
 		}
 		removedData = append(removedData, v)
 	}
-	_, err = r.FavouritesService.MarkFavouritesForAUser(ctx, userID, removedData)
+	_, err = r.FavouritesService.MarkFavouritesForAUser(ctx, userID, removedData, true)
 	if err != nil {
 		utils.LogError("couldn't update favourites for the user"+err.Error(), "Graph Resolver")
-		return false, err
+		return &response, err
 	}
-	return true, err
+	response.Done = true
+	return &response, err
 }
 
 func (r *queryResolver) GetAllHeroes(ctx context.Context) ([]*model.Hero, error) {

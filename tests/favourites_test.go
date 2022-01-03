@@ -68,7 +68,7 @@ func TestMarkHeroesToFavourites(t *testing.T) {
 		MysqlConn:       &conn,
 		FavouritesTable: "Favourites",
 	}
-	res, err := fh.MarkFavouritesForAUser(context.Background(), -2, []int{1, 2, 3, 4})
+	res, err := fh.MarkFavouritesForAUser(context.Background(), -2, []int{1, 2, 3, 4}, false)
 	if err != nil {
 		t.Errorf("couldn't get favourites:" + err.Error())
 		t.FailNow()
@@ -96,7 +96,7 @@ func TestMarkHeroesToFavouritesEmptyArray(t *testing.T) {
 		MysqlConn:       &conn,
 		FavouritesTable: "Favourites",
 	}
-	res, err := fh.MarkFavouritesForAUser(context.Background(), -3, []int{})
+	res, err := fh.MarkFavouritesForAUser(context.Background(), -3, []int{}, false)
 	if err != nil {
 		t.Errorf("couldn't get favourites:" + err.Error())
 		t.FailNow()

@@ -78,9 +78,9 @@ func (handler *FavouritesHandler) InsertFavouritesForAUser(pctx context.Context,
 }
 
 //Updates the favourites of a certain userID
-func (handler *FavouritesHandler) UpdateFavouritesForAUser(pctx context.Context, userID int, heroIDs []int) (bool, error) {
+func (handler *FavouritesHandler) UpdateFavouritesForAUser(pctx context.Context, userID int, heroIDs []int, remove bool) (bool, error) {
 	formattedIDs := []string{}
-	if len(heroIDs) == 0 {
+	if !remove && len(heroIDs) == 0 {
 		utils.LogInfo("no hero ids provided", "UpdateFavouritesForAUser")
 		return true, nil
 	}
@@ -98,7 +98,12 @@ func (handler *FavouritesHandler) UpdateFavouritesForAUser(pctx context.Context,
 	}
 	defer dbConn.Close()
 
-	query := fmt.Sprintf("UPDATE %s SET HeroID='%s' where UserID=%d", handler.FavouritesTable, data, userID)
+	var query string
+	if remove {
+		query = fmt.Sprintf("DELETE from %s where UserID=%d", handler.FavouritesTable, userID)
+	} else {
+		query = fmt.Sprintf("UPDATE %s SET HeroID='%s' where UserID=%d", handler.FavouritesTable, data, userID)
+	}
 	res, err := handler.MysqlConn.ModifyFavouritesTable(ctx, dbConn, query)
 	if err != nil {
 		utils.LogError("error inserting data: "+err.Error(), "UpdateFavouritesForAUser")
@@ -109,21 +114,26 @@ func (handler *FavouritesHandler) UpdateFavouritesForAUser(pctx context.Context,
 }
 
 //Marks favourites of the user - appends if favourites already exist or inserts new records
-func (handler *FavouritesHandler) MarkFavouritesForAUser(pctx context.Context, userID int, newHeroIDs []int) (bool, error) {
+func (handler *FavouritesHandler) MarkFavouritesForAUser(pctx context.Context, userID int, newHeroIDs []int, remove bool) (bool, error) {
 	ctx, cancel := context.WithCancel(pctx)
 	defer cancel()
 	existingData, err := handler.QueryFavouritesOfAUser(ctx, userID)
 	if err != nil {
 		return false, err
 	}
-	if len(existingData) == 0 {
+	if !remove && len(existingData) == 0 {
 		_, err := handler.InsertFavouritesForAUser(ctx, userID, newHeroIDs)
 		if err != nil {
 			return false, err
 		}
 	} else {
-		updatedIDs := append(existingData, newHeroIDs...)
-		_, err := handler.UpdateFavouritesForAUser(ctx, userID, updatedIDs)
+		var updatedIDs []int
+		if remove {
+			updatedIDs = newHeroIDs
+		} else {
+			updatedIDs = append(existingData, newHeroIDs...)
+		}
+		_, err := handler.UpdateFavouritesForAUser(ctx, userID, updatedIDs, remove)
 		if err != nil {
 			return false, err
 		}
