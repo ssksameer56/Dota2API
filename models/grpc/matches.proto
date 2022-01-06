@@ -1,0 +1,29 @@
+syntax="proto3";
+package grpc;
+import "grpc.heroes.proto";
+
+option go_package = "github.com/ssksameer56/Dota2API/models/grpc";
+
+
+message MatchDetailsResponse{
+    int32 MatchID = 1;
+    int32 DireKills = 2;
+    int32 RadiantKills = 3;
+    float Duration = 4;
+    int32 GameMode = 5;
+    int32 GoldAdvantage = 6;
+    int32 XPAdvantage = 7;
+    int32 RadiantTowersKilled = 8;
+    int32 DireTowersKilled = 9;
+    int32 RadiantBarracksKilled = 10;
+    int32 DireBaracksKilled = 11;
+    repeated InGameHero RadiantHeroes = 12;
+    repeated InGameHero DireHeros = 13;
+}
+
+message MatchDetailsRequest{
+    int32 MatchID = 1;
+}
+
+message MatchIDsRequest{
+}
