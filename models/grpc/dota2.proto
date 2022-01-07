@@ -1,0 +1,126 @@
+syntax = "proto3";
+package grpc;
+
+option go_package="github.com/ssksameer56/Dota2API/models/grpc";
+
+service Dota2Service{
+    rpc GetAllHeroes (GetAllHeroesRequest) returns (GetAllHeroesResponse);
+    rpc GetHero (GetHeroRequest) returns (Hero);
+    rpc GetAllItems (GetAllItemsRequest) returns (GetAllItemsResponse);
+    rpc GetItem (GetItemRequest) returns (Item);
+    rpc GetLiveMatches(MatchIDsRequest) returns (stream MatchIDsResponse);
+    rpc GetMatchDetails(MatchDetailsRequest) returns (stream MatchDetailsResponse);
+    
+}
+
+enum Attribute {
+    STRENGTH = 0;
+    AGILITY = 1;
+    INTELLIGENCE = 2;
+}
+
+enum AttackType{
+    MELEE = 0;
+    RANGED = 1;
+}
+
+enum Role{
+    CARRY = 0;
+    NUKER = 1;
+    INITIATOR = 2;
+    DISABLER = 3;
+    DURABLE = 4;
+    ESCAPE = 5;
+    SUPPORT = 6;
+    PUSHER = 7;
+    JUNGLER = 8;
+}
+enum DamageType {
+    PHYSICAL = 0;
+    MAGICAL = 1;
+    PURE = 2;
+}
+enum AbilityBehavior{
+    PASSIVE = 0;
+    ACTIVE = 1;
+    CHANNEL = 2;
+    TOGGLED = 3;
+
+}
+
+message Hero{
+    string Name = 1;
+    string HeroName = 2;
+    Attribute HeroAttribute = 3;
+    repeated Role Role = 4;
+    repeated HeroAbility Abilities = 5;
+}
+
+message HeroAbility{
+    string Name = 1;
+    string Description = 2;
+    DamageType DamageType = 3;
+    AbilityBehavior AbilityBehavior = 4;
+}
+
+message InGameHero{
+    Hero Hero = 1;
+    repeated Item Items = 2;
+    int32 Gold = 3;
+    int32 XP = 4;
+    int32 Level = 5;
+    int32 Kills = 6;
+    int32 Deaths = 7;
+    int32 Assists = 8;
+}
+
+message GetAllHeroesRequest{}
+message GetAllHeroesResponse{
+    repeated Hero Hero = 1;
+}
+message GetHeroRequest{
+    int32 HeroId = 1;
+    string HeroName = 2;
+}
+
+message MatchDetailsResponse{
+    int32 MatchID = 1;
+    int32 DireKills = 2;
+    int32 RadiantKills = 3;
+    float Duration = 4;
+    int32 GameMode = 5;
+    int32 GoldAdvantage = 6;
+    int32 XPAdvantage = 7;
+    int32 RadiantTowersKilled = 8;
+    int32 DireTowersKilled = 9;
+    int32 RadiantBarracksKilled = 10;
+    int32 DireBaracksKilled = 11;
+    repeated InGameHero RadiantHeroes = 12;
+    repeated InGameHero DireHeros = 13;
+}
+
+message MatchDetailsRequest{
+    int32 MatchID = 1;
+}
+
+message MatchIDsRequest{
+}
+message MatchIDsResponse{
+    int32 MatchID = 1;
+}
+
+message Item{
+    string Name = 1;
+    int32 Id = 2;
+    int32 Cost = 3;
+    repeated string Hint = 4;
+}
+
+message GetAllItemsRequest{}
+message GetAllItemsResponse{
+    repeated Item Items = 1;
+}
+message GetItemRequest{
+    int32 ItemId = 1;
+    string Name = 2;
+}
