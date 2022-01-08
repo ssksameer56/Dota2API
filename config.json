@@ -5,5 +5,7 @@
     "graphAPIPort":"8080",
     "gRPCAPIPort":"5001",
     "databaseName":"DotaDatabase",
-    "secureModeGRPC": "false"
+    "secureModeGRPC": "true",
+    "sslCertificateLocation":"../cert.pem",
+    "sslKeyLocation":"../key.pem"
 }

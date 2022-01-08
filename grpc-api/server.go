@@ -40,7 +40,7 @@ func StartGrpcServer(config models.Configuration, dataHandler *handlers.Dota2Han
 	}
 	secureMode, _ := strconv.ParseBool(config.SecureModeGRPC)
 	if secureMode {
-		cert, err := tls.LoadX509KeyPair("./cert.pem", "key.pem")
+		cert, err := tls.LoadX509KeyPair(config.SSLCertificateLocation, config.SSLKeyLocation)
 		if err != nil {
 			utils.LogFatal(err.Error(), "GRPC Server")
 			wg.Done()
@@ -61,14 +61,14 @@ func StartGrpcServer(config models.Configuration, dataHandler *handlers.Dota2Han
 }
 
 func UnaryLogger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	utils.LogInfo(fmt.Sprintf("got request at:%s", info.FullMethod), "GRPC Server")
+	utils.LogInfo(fmt.Sprintf("got request at:%s- %v", info.FullMethod, req), "GRPC Server")
 	m, err := handler(ctx, req)
 	return m, err
 
 }
 
 func StreamLogger(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-	utils.LogInfo(fmt.Sprintf("got request at:%s", info.FullMethod), "GRPC Server")
+	utils.LogInfo(fmt.Sprintf("got request at:%s - %v", info.FullMethod, srv), "GRPC Server")
 	err := handler(srv, ss)
 	return err
 }
