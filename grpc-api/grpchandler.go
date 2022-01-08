@@ -8,6 +8,7 @@ import (
 )
 
 type GrpcServer struct {
+	grpc.UnimplementedDota2ServiceServer
 	Dota2Handler      *handlers.Dota2Handler
 	MatchDataHandler  *handlers.MatchDataHandler
 	FavouritesHandler *handlers.FavouritesHandler

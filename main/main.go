@@ -10,6 +10,7 @@ import (
 
 	"github.com/ssksameer56/Dota2API/database"
 	graphapi "github.com/ssksameer56/Dota2API/graph-api"
+	grpcapi "github.com/ssksameer56/Dota2API/grpc-api"
 	"github.com/ssksameer56/Dota2API/handlers"
 	"github.com/ssksameer56/Dota2API/models"
 	"github.com/ssksameer56/Dota2API/models/common"
@@ -35,7 +36,8 @@ func main() {
 	wg.Add(1)
 	go graphapi.StartGraphServer(config, dotaHandler, favouritesHandler, matchDataHandler, wg)
 
-	//go grpcapi.StartGrpcServer(config, dotaHandler, matchDataHandler)
+	wg.Add(1)
+	go grpcapi.StartGrpcServer(config, dotaHandler, matchDataHandler, wg)
 	wg.Wait()
 }
 

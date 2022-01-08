@@ -2,7 +2,6 @@ package graphapi
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -34,7 +33,7 @@ func StartGraphServer(config models.Configuration, dota2Handler *handlers.Dota2H
 	utils.LogInfo(fmt.Sprintf("connect to http://localhost:%s/ for GraphQL playground", port), "Graph Server")
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		log.Fatal(err)
+		utils.LogFatal(err.Error(), "GraphServer")
 		wg.Done()
 	}
 }
