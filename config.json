@@ -4,5 +4,6 @@
     "apiKey": "{{Insert OpenDota Key Here}}",
     "graphAPIPort":"8080",
     "gRPCAPIPort":"5001",
+    "connectionString":"{username}:{password}@tcp(127.0.0.1:3306)/DotaDatabase",
     "databaseName":"DotaDatabase"
 }
