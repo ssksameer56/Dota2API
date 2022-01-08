@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net"
+	"strconv"
 	"sync"
 
 	"github.com/ssksameer56/Dota2API/handlers"
@@ -21,26 +22,36 @@ func StartGrpcServer(config models.Configuration, dataHandler *handlers.Dota2Han
 		Dota2Handler:     dataHandler,
 		MatchDataHandler: matchHandler,
 	}
-	lis, err := net.Listen("tcp", ":"+config.GrpcAPIPort)
+	port := "8081"
+	if config.GrpcAPIPort != "" {
+		port = config.GrpcAPIPort
+	}
+	lis, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		utils.LogFatal(err.Error(), "GRPC Server")
 		wg.Done()
 		return
 	}
-	cert, err := tls.LoadX509KeyPair("./cert.pem", "key.pem")
-	if err != nil {
-		utils.LogFatal(err.Error(), "GRPC Server")
-		wg.Done()
-		return
-	}
+
 	opts := []grpc.ServerOption{
-		grpc.Creds(credentials.NewServerTLSFromCert(&cert)),
+
 		grpc.UnaryInterceptor(UnaryLogger),
 		grpc.StreamInterceptor(StreamLogger),
 	}
+	secureMode, _ := strconv.ParseBool(config.SecureModeGRPC)
+	if secureMode {
+		cert, err := tls.LoadX509KeyPair("./cert.pem", "key.pem")
+		if err != nil {
+			utils.LogFatal(err.Error(), "GRPC Server")
+			wg.Done()
+			return
+		}
+		opts = append(opts, grpc.Creds(credentials.NewServerTLSFromCert(&cert)))
 
+	}
 	grpcServer := grpc.NewServer(opts...)
 	dota2grpc.RegisterDota2ServiceServer(grpcServer, &dotaserver)
+	utils.LogInfo(fmt.Sprintf("Starting gRPC Server localhost:%s", port), "GRPC Server")
 	err = grpcServer.Serve(lis)
 	if err != nil {
 		utils.LogFatal(err.Error(), "GRPC Server")

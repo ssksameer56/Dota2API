@@ -8,4 +8,5 @@ type Configuration struct {
 	GraphAPIPort     string `json:"graphAPIPort"`
 	GrpcAPIPort      string `json:"gRPCAPIPort"`
 	DatabaseName     string `json:"databaseName"`
+	SecureModeGRPC   string `json:"secureModeGRPC"`
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -19,6 +20,10 @@ import (
 )
 
 func main() {
+
+	runGraph := flag.Bool("graph", true, "Run GraphQL Server. True by Default")
+	runGrpc := flag.Bool("grpc", true, "Run gRPC Server. True by default")
+
 	var config models.Configuration
 	var openDotaService *opendota.OpenDotaService
 	loadConfig(&config)
@@ -33,11 +38,17 @@ func main() {
 		panic(1)
 	}
 	wg := sync.WaitGroup{}
-	wg.Add(1)
-	go graphapi.StartGraphServer(config, dotaHandler, favouritesHandler, matchDataHandler, wg)
 
-	wg.Add(1)
-	go grpcapi.StartGrpcServer(config, dotaHandler, matchDataHandler, wg)
+	if *runGraph {
+		wg.Add(1)
+		utils.LogInfo("Graph Server to be run", "MAIN")
+		go graphapi.StartGraphServer(config, dotaHandler, favouritesHandler, matchDataHandler, wg)
+	}
+	if *runGrpc {
+		wg.Add(1)
+		utils.LogInfo("GRPC Server to be run", "MAIN")
+		go grpcapi.StartGrpcServer(config, dotaHandler, matchDataHandler, wg)
+	}
 	wg.Wait()
 }
 
