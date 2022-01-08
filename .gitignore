@@ -17,3 +17,6 @@
 graph-api/server.go
 logs/log
 logs/log.log
+cert.pem
+.gitignore
+key.pem
