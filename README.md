@@ -13,4 +13,21 @@ Dota 2 API built using GraphQL, gRPC and HTTP2
 ## Running API
 - The `main` package runs both gRPC and graphQL API simaltaneously when run. You can add required flags to start just one of the API.
   - `-grpc` and `-graph` are the command line flags
--  
+- Provide the `certificate` and `key` location in the config file
+- Build using `go build main/main.go -o {{filename}}`
+
+## Using the API
+- GraphQL exposes a playground that you can directly use
+- For testing gRPC, you can use [BloomRPC](https://github.com/bloomrpc/bloomrpc)
+
+## Built Using and with Help of 
+- Go
+- [GQLGen](https://gqlgen.com/)
+- [MkCert](https://github.com/FiloSottile/mkcert)
+- [BloomRPC](https://github.com/bloomrpc/bloomrpc)
+- [Logrus](https://github.com/sirupsen/logrus)
+
+## TO-DO
+- Add extensive Logging
+- Add GUI Client using Svelte
+- Dockerize the services using Docker Compose (MySQL,gRPC, Graph, Svelte)
