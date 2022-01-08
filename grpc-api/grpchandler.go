@@ -2,6 +2,7 @@ package grpcapi
 
 import (
 	"context"
+	"time"
 
 	"github.com/ssksameer56/Dota2API/handlers"
 	"github.com/ssksameer56/Dota2API/models/grpc"
@@ -70,6 +71,7 @@ func (s *GrpcServer) GetLiveMatches(req *grpc.MatchIDsRequest, stream grpc.Dota2
 			MatchID: int32(val),
 		}
 		stream.Send(&response)
+		time.Sleep(time.Second * 2) //Mimic streaming since its constant data
 	}
 	return nil
 }
@@ -96,5 +98,6 @@ func (s *GrpcServer) GetMatchDetails(req *grpc.MatchDetailsRequest, stream grpc.
 			return err
 		}
 		stream.Send(TransformMatchDetails(&data, itemData, heroData))
+		time.Sleep(time.Second * 2) //Mimic streaming since its constant data
 	}
 }
