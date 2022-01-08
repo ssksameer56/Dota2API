@@ -100,7 +100,7 @@ message MatchDetailsResponse{
 }
 
 message MatchDetailsRequest{
-    int32 MatchID = 1;
+    int64 MatchID = 1;
 }
 
 message MatchIDsRequest{
