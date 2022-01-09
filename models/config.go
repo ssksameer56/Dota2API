@@ -2,6 +2,7 @@ package models
 
 type Configuration struct {
 	LogFile                string `json:"logFile"`
+	ClientLogFile          string `json:"clientLogFile"`
 	IsProduction           string `json:"isProduction"`
 	ApiKey                 string `json:"apiKey"`
 	ConnectionString       string `json:"connectionString"`
