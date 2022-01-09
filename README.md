@@ -20,6 +20,12 @@ Dota 2 API built using GraphQL, gRPC and HTTP2
 - GraphQL exposes a playground that you can directly use
 - For testing gRPC, you can use [BloomRPC](https://github.com/bloomrpc/bloomrpc)
 
+## Clients
+- You can use the gRPC Command Line Client by going to `client/grpc-client/main`. Build normally.
+- To use specific service, you can pass the number as command line argument followed by any parameter as required.
+- Logs are stored at `log/clientlog.log`
+- Need to pass the location of `cert.pem` file of server to client to use TLS.
+
 ## Built Using and with Help of 
 - Go
 - [GQLGen](https://gqlgen.com/)
