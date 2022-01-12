@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  graph-ql-api:
+    context: .docker/
+    image: graph-ql-api
+    dockerfile: graph.dockerfile
+    ports:
+      - "8080:1000"
+    networks:
+      - my-docker-net
+  grpc-api:
+    context: .docker/
+    image: grpc-api
+    dockerfile: grpc.dockerfile
+    ports:
+      - "5050:2000"
+    networks:
+      - my-docker-net
+  grpc-cmd:
+    context: ./docker
+    image: grpc-cmd
+    dockerfile: cmd.dockerfile
+    networks:
+      - my-docker-net
+  mysql-db:
+    context: ./docker
+    image: dota2api-db
+    dockerfile: db.dockerfile
+    networks:
+      - my-docker-net
+    volumes:
+      -dota2vol
+networks:
+  my-docker-net:
+    driver: bridge
+volumes:
+  dota2vol:
+
+environment:

@@ -1,0 +1,4 @@
+*.yml
+.git
+.gitignore
+.vscode
