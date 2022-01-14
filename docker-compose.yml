@@ -7,6 +7,8 @@ services:
     dockerfile: graph.dockerfile
     ports:
       - "8080:1000"
+    volumes:
+      - /app/logs:logs
     networks:
       - my-docker-net
   grpc-api:
@@ -15,12 +17,16 @@ services:
     dockerfile: grpc.dockerfile
     ports:
       - "5050:2000"
+    volumes:
+      - /app/logs:logs
     networks:
       - my-docker-net
   grpc-cmd:
     context: ./docker
     image: grpc-cmd
     dockerfile: cmd.dockerfile
+    volumes:
+      - /app/logs:logs
     networks:
       - my-docker-net
   mysql-db:
@@ -31,10 +37,12 @@ services:
       - my-docker-net
     volumes:
       -dota2vol
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: Dota2Database
 networks:
   my-docker-net:
     driver: bridge
 volumes:
-  dota2vol:
-
+  dota2vol
 environment:
