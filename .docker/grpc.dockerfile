@@ -20,7 +20,7 @@ COPY --from=builder /app/main/grpcapi ./main
 COPY --from=builder /app/config.json .
 COPY --from=builder /app/cert.pem .
 COPY --from=builder /app/key.pem .
-
-ENTRYPOINT ["main/grpcapi"]
-
+WORKDIR /app/main
+ENTRYPOINT ["./grpcapi"]
+EXPOSE 5001
 CMD ["-graph=false","-grpc=true"]
