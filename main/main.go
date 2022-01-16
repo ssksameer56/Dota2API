@@ -21,8 +21,9 @@ import (
 
 func main() {
 
-	runGraph := flag.Bool("graph", true, "Run GraphQL Server. True by Default")
-	runGrpc := flag.Bool("grpc", true, "Run gRPC Server. True by default")
+	runGraph := flag.Bool("graph", false, "Run GraphQL Server. False by Default")
+	runGrpc := flag.Bool("grpc", false, "Run gRPC Server. False by default")
+	flag.Parse()
 
 	var config models.Configuration
 	var openDotaService *opendota.OpenDotaService

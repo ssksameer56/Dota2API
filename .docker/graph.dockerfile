@@ -22,4 +22,4 @@ COPY --from=builder /app/key.pem ./app
 WORKDIR /app/main
 ENTRYPOINT ["./graphapi"]
 EXPOSE 8080
-CMD ["-graph=true","-grpc=false"]
+CMD ["-graph=true"]

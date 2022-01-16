@@ -23,4 +23,4 @@ COPY --from=builder /app/key.pem .
 WORKDIR /app/main
 ENTRYPOINT ["./grpcapi"]
 EXPOSE 5001
-CMD ["-graph=false","-grpc=true"]
+CMD ["-grpc=true"]
