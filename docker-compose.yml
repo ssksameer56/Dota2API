@@ -8,9 +8,11 @@ services:
     ports:
       - "8080:1000"
     volumes:
-      - /app/logs:./logs
+      - /app/logs:/Users/sameer/Code/Dota2API/logs"
     networks:
       - my-docker-net
+    depends_on:
+      - mysql-db
   grpc-api:
     context: .docker/
     image: grpc-api
@@ -18,25 +20,20 @@ services:
     ports:
       - "5050:2000"
     volumes:
-      - /app/logs:./logs
+      - /app/logs:/Users/sameer/Code/Dota2API/logs"
     networks:
       - my-docker-net
-  grpc-cmd:
-    context: ./docker
-    image: grpc-cmd
-    dockerfile: cmd.dockerfile
-    volumes:
-      - /app/logs:./logs
-    networks:
-      - my-docker-net
+    depends_on:
+      - mysql-db
   mysql-db:
     context: ./docker
     image: dota2api-db
+    restart: always
     dockerfile: db.dockerfile
     networks:
       - my-docker-net
     volumes:
-      - dota2vol:/var/lib/mysql 
+      - dota2vol:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: DotaDatabase
@@ -44,5 +41,4 @@ networks:
   my-docker-net:
     driver: bridge
 volumes:
-  dota2vol
-environment:
+  dota2vol:
