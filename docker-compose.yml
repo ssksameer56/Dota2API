@@ -13,6 +13,8 @@ services:
       - my-docker-net
     depends_on:
       - mysql-db
+    environment:
+      - DATABASE_HOST=docker-database
   grpc-api:
     context: .docker/
     image: grpc-api
@@ -25,6 +27,8 @@ services:
       - my-docker-net
     depends_on:
       - mysql-db
+    environment:
+      - DATABASE_HOST=docker-database
   mysql-db:
     context: ./docker
     image: dota2api-db
@@ -35,8 +39,8 @@ services:
     volumes:
       - dota2vol:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: DotaDatabase
+     - MYSQL_ROOT_PASSWORD=root
+     - MYSQL_DATABASE=DotaDatabase
 networks:
   my-docker-net:
     driver: bridge

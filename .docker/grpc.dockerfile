@@ -23,4 +23,5 @@ COPY --from=builder /app/key.pem .
 WORKDIR /app/main
 ENTRYPOINT ["./grpcapi"]
 EXPOSE 5001
+ENV DATABASE_HOST=docker-database
 CMD ["-grpc=true"]

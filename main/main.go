@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/ssksameer56/Dota2API/database"
@@ -98,6 +99,14 @@ func loadHandlers(odService *opendota.OpenDotaService, config models.Configurati
 	}
 	matchHandler := &handlers.MatchDataHandler{
 		Dota2service: odService,
+	}
+
+	hostName := os.Getenv("DATABASE_HOST")
+	abc := os.Environ()
+	fmt.Println(abc)
+	if hostName != "" {
+		config.ConnectionString = strings.ReplaceAll(config.ConnectionString, "localhost", hostName)
+		utils.LogInfo(fmt.Sprintf("Changed Connection string to %s", config.ConnectionString), "loadHandlers")
 	}
 
 	sqlConnection := &database.SqlConnection{

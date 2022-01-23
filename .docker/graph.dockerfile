@@ -22,4 +22,5 @@ COPY --from=builder /app/key.pem ./app
 WORKDIR /app/main
 ENTRYPOINT ["./graphapi"]
 EXPOSE 8080
+ENV DATABASE_HOST=docker-database
 CMD ["-graph=true"]
