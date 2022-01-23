@@ -39,7 +39,7 @@ services:
     volumes:
       - dota2vol:/var/lib/mysql
     environment:
-     - MYSQL_ROOT_PASSWORD=root
+     - MYSQL_ROOT_PASSWORD=sameer123
      - MYSQL_DATABASE=DotaDatabase
 networks:
   my-docker-net:
