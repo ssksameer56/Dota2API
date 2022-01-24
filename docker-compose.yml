@@ -1,39 +1,45 @@
-version: '3.7'
+version: "3.8"
 
 services:
+  
   graph-ql-api:
-    context: .docker/
-    image: graph-ql-api
-    dockerfile: graph.dockerfile
+    image: graph-ql-api:1.0.0
+    build:
+      context: .    
+      dockerfile: .docker/graph.dockerfile
     ports:
-      - "8080:1000"
+      - "1000:8080"
     volumes:
-      - /app/logs:/Users/sameer/Code/Dota2API/logs"
+      - /Users/sameer/Code/Dota2API/logs:/app/logs
     networks:
       - my-docker-net
     depends_on:
       - mysql-db
     environment:
       - DATABASE_HOST=docker-database
+  
   grpc-api:
-    context: .docker/
-    image: grpc-api
-    dockerfile: grpc.dockerfile
+    image: grpc-api:1.0.0
+    build:
+      context: .
+      dockerfile: .docker/grpc.dockerfile
     ports:
-      - "5050:2000"
+      - "2000:5050"
     volumes:
-      - /app/logs:/Users/sameer/Code/Dota2API/logs"
+      - /Users/sameer/Code/Dota2API/logs:/app/logs
     networks:
       - my-docker-net
     depends_on:
       - mysql-db
     environment:
       - DATABASE_HOST=docker-database
+  
   mysql-db:
-    context: ./docker
     image: dota2api-db
+    build:
+      context: .
+      dockerfile: .docker/database.dockerfile
     restart: always
-    dockerfile: db.dockerfile
     networks:
       - my-docker-net
     volumes:
